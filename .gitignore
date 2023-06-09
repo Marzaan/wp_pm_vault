@@ -1,0 +1,11 @@
+# Ignore general files and directories
+/node_modules
+/dist
+
+# Ignore development and build artifacts
+.vscode
+.idea
+.DS_Store
+
+# Ignore dependencies installed via npm or Yarn
+/package-lock.json
