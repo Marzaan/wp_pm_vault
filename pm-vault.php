@@ -31,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * The plugin name.
 */
-defined( 'Plugin_Name' ) or define( 'Plugin_Name', 'PM Vault' );
+defined( 'PM_VAULT' ) or define( 'PM_VAULT', true );
 /**
  * Currently plugin version.
 */
@@ -71,13 +71,18 @@ function run_pm_vault() {
 run_pm_vault();
 
 // Redirect User on Activation
-function redirectOnActivation( $plugin )
+function redirect_on_activation( $plugin )
 {
 	if ( $plugin == plugin_basename( __FILE__)) {
 		wp_redirect(admin_url('admin.php?page=pm_vault'));
 		die();
 	}
 }
-add_action('activated_plugin', 'redirectOnActivation');
+add_action('activated_plugin', 'redirect_on_activation');
+
+function footer_text_modify( $text ) {
+	return 'PM Vault © 2023';
+}
+add_filter('admin_footer_text', 'footer_text_modify');
 
 ?>

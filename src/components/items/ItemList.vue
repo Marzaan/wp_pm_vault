@@ -4,7 +4,7 @@
         <div class="section-title pb-4">
             <h2>All Items</h2>
 
-            <button @click="" class="btn btn-dark hover-btn">
+            <button @click="" class="btn btn-primary hover-btn">
                 New Item
             </button>
         </div>
@@ -96,5 +96,5 @@ export default {
 </script>
 
 <style>
-@import '../../assets/styles/item.scss'
+@import '../../assets/styles/item.scss';
 </style>

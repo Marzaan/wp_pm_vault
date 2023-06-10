@@ -8,7 +8,7 @@ class Enqueue {
 	private $version;
 
 	public function __construct() {
-		$this->plugin_name = Plugin_Name;
+		$this->plugin_name = PM_VAULT;
 		$this->version = PM_VAULT_VERSION;
 	}
 

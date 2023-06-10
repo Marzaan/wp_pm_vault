@@ -1,16 +1,15 @@
 <template>
     <div>
-      <index-view/>
+      <main-layout/>
     </div>
 </template>
 
 <script>
 
-import IndexView from './views/Index.vue';
-console.log("AppView");
+import MainLayout from './views/index.vue';
 export default {
     components: {
-      IndexView
+      MainLayout
     },
 };
 </script>

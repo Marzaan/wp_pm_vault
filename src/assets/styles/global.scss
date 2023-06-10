@@ -27,10 +27,10 @@ h1 {
 }
 
 .hover-btn {
-  background: #1e2a3c;
-  border: none;
+  background: #1e2a3c !important;
+  border: none !important;
   &:hover {
-    background: #2d8ca6;
+    background: #2d8ca6 !important;
   }
 }
 
