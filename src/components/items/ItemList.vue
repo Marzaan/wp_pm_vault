@@ -14,7 +14,7 @@
                   <input type="checkbox" id="select-all" @click=""/>All
                 </div>
                 <div class="col-md-6">Name</div>
-                <div class="col-md-3">Owner</div>
+                <div class="col-md-3">Folder</div>
                   <div class="col-md-1">
                     <div class="three-dot-dropdown">
                       <button type="button" class="three-dot-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -51,14 +51,11 @@
                         <div class="col-md-6 d-flex">
                           <div class="item-name">
                             <p class="my-0 list-item-name" @click="">Dummy Item</p>
-                              <span class="item-type text-muted small">
-                                Login Item
-                            </span>
                           </div>
                         </div>
                           <div class="col-md-3">
-                              <p class="list-own-name" title="Me">
-                                Me
+                              <p class="list-own-name" title="Folder">
+                                Folder Name
                               </p>
                           </div>
                         <div class="col-md-1">

@@ -10,10 +10,6 @@
           <ul class="list-group list-group-flush">
             <li class="list-group-item side-menu-item" @click="handleSelectMenu($event, 'items')"><i class="bi bi-bricks"></i> All Items</li>
             <li class="list-group-item side-menu-item" @click="handleSelectMenu($event, 'favorite')"><i class="bi bi-star"></i> Favorites</li>
-            <li class="list-group-item side-menu-item" @click="handleSelectMenu($event, 'type', 1)"><i class="bi bi-globe"></i> Login</li>
-            <li class="list-group-item side-menu-item" @click="handleSelectMenu($event, 'type', 2)"><i class="bi bi-credit-card-2-back"></i> Card</li>
-            <li class="list-group-item side-menu-item" @click="handleSelectMenu($event, 'type', 3)"><i class="bi bi-person-vcard"></i> Identity</li>
-            <li class="list-group-item side-menu-item" @click="handleSelectMenu($event, 'type', 4)"><i class="bi bi-sticky"></i> Secure note</li>
           </ul>
         </div>
       </div>

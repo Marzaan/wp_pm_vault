@@ -53,15 +53,13 @@ export default {
         const nonce = window.ajax_object.nonce;
         window.jQuery.ajax({
           url: ajaxUrl,
-          type: 'post',
           data: {
             action: 'get_folders',
             nonce: nonce,
           },
-          dataType: 'json',
-          success: function(response){
-            this.folderData = response;
-            console.log(response);
+          success: (response) => {
+            this.folderData = response.data;
+            console.log(this.folderData);
           }
         });
     },
@@ -70,12 +68,10 @@ export default {
       const nonce = window.ajax_object.nonce;
       window.jQuery.ajax({
         url: ajaxUrl,
-        type: 'post',
         data: {
           action: 'get_items',
           nonce: nonce,
         },
-        dataType: 'json',
         success: function(response){
           console.log(response);
         }

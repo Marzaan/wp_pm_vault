@@ -13,7 +13,7 @@
                 <div
                   @click=""
                 >
-                  <i class="bi bi-folder2"></i>
+                  <i class="bi bi-folder2"></i>{{ data.foldername }}
                 </div>
                 <span>
                   <i class="bi bi-three-dots-vertical" @click=""></i>
@@ -28,13 +28,11 @@
   </template>
   
   <script>
-  
   export default {
     name: "FoldersBar",
-    props: {
-      folderData: Array,
-      setSelectMenu: Function,
-    },
+    props: [
+      'folderData',
+    ]
   };
   </script>
   
