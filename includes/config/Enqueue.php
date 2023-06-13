@@ -20,6 +20,13 @@ class Enqueue {
 			 $this->version,
 			 'all'
 		 );
+		 wp_enqueue_style(
+			'font-awesome',
+			'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
+			array(),
+			'6.4.0',
+			'all'
+		);
 		// Enqueue Bootstrap CSS
 		wp_enqueue_style(
 			'bootstrap',
@@ -52,7 +59,7 @@ class Enqueue {
 	public function localize_scripts(){
 		wp_localize_script( 'custom_js', 'ajax_object', array( 
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
-			'nonce' => wp_create_nonce( 'my_ajax_nonce' )
+			'nonce' => wp_create_nonce( 'pm_vault_nonce' )
 		) );
 	}
 }

@@ -9,13 +9,11 @@
           <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ItemsBar/>
-              <FoldersBar
-                :folderData="folderData"
-              />
+              <FoldersBar/>
             </li>
             <li
-              class="list-group-item text-danger fw-bold text-center cursor-pointer"
-              @click=""
+                class="list-group-item text-danger fw-bold text-center cursor-pointer"
+                @click=""
             >
               <i class="bi bi-trash"></i> Trash
             </li>
@@ -44,35 +42,17 @@ export default {
   data() {
     return {
       loading: true,
-      folderData: [],
     };
   },
   methods: {
-    getFolders() {
-        const ajaxUrl = window.ajax_object.ajax_url;
-        const nonce = window.ajax_object.nonce;
-        window.jQuery.ajax({
-          url: ajaxUrl,
-          data: {
-            action: 'get_folders',
-            nonce: nonce,
-          },
-          success: (response) => {
-            this.folderData = response.data;
-            console.log(this.folderData);
-          }
-        });
-    },
     getItems() {
       const ajaxUrl = window.ajax_object.ajax_url;
-      const nonce = window.ajax_object.nonce;
       window.jQuery.ajax({
         url: ajaxUrl,
         data: {
           action: 'get_items',
-          nonce: nonce,
         },
-        success: function(response){
+        success: (response) => {
           console.log(response);
         }
       });
@@ -80,7 +60,6 @@ export default {
   },
   mounted() {
     console.log("HomeMounted");
-    this.getFolders();
     this.getItems();
   },
 };

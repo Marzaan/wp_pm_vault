@@ -8,7 +8,7 @@ import router from './routes';
 Vue.use(VueRouter);
 
 new Vue({
-  el: '#pm-vault-app',
-  router,
-  render: h => h(App),
+    el: '#pm-vault-app',
+    router,
+    render: h => h(App),
 });

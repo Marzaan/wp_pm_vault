@@ -4,7 +4,7 @@ import Tools from './views/tools/index.vue';
 
 const routes = [
     {
-        path: '/', 
+        path: '/',
         component: Home
     },
     {
