@@ -22,9 +22,20 @@ class ItemController {
 
     public function register_routes()
     {
-        add_action( 'wp_ajax_get_items', [$this, 'show']);
-        add_action( 'wp_ajax_create_or_update_item', [$this, 'create_or_update']);
-        add_action( 'wp_ajax_delete_item', [$this, 'destroy']);
+        add_action( 'wp_ajax_item_endpoints', [$this, 'ajax_routing']);
+    }
+
+    public function ajax_routing(){
+        $routes = [
+            'get_items' => 'show',
+            'create_or_update_item' => 'create_or_update',
+            'delete_item' => 'destroy'
+        ];
+
+        $route = Sanitization::sanitize_value($_REQUEST['route']);
+
+        $this->{$routes[$route]}();
+        return;
     }
 
     public function show() {

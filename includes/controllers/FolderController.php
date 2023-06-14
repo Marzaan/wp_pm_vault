@@ -19,9 +19,20 @@ class FolderController {
     }
 
     public function register_routes() {
-        add_action( 'wp_ajax_get_folders', [$this, 'show']);
-        add_action( 'wp_ajax_create_or_update_folder', [$this, 'create_or_update']);
-        add_action( 'wp_ajax_delete_folder', [$this, 'destroy']);
+        add_action( 'wp_ajax_folder_endpoints', [$this, 'ajax_routing']);
+    }
+
+    public function ajax_routing(){
+        $routes = [
+            'get_folders' => 'show',
+            'create_or_update_folder' => 'create_or_update',
+            'delete_folder' => 'destroy'
+        ];
+
+        $route = Sanitization::sanitize_value($_REQUEST['route']);
+
+        $this->{$routes[$route]}();
+        return;
     }
 
     public function show() {

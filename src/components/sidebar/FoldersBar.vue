@@ -93,11 +93,14 @@ export default {
     /********* AJAX Call *********/
     getFolders() {
       const ajaxUrl = window.ajax_object.ajax_url;
+      const folderAction = 'folder_endpoints';
       window.jQuery.ajax({
         url: ajaxUrl,
         data: {
-          action: 'get_folders',
+          action: folderAction,
+          route: 'get_folders'
         },
+        method: 'GET',
         success: (response) => {
           this.folderData = response.data;
           console.log(this.folderData);
@@ -106,10 +109,12 @@ export default {
     },
     addOrUpdateFolder(params) {
       const ajaxUrl = window.ajax_object.ajax_url;
+      const folderAction = 'folder_endpoints';
       const nonce = window.ajax_object.nonce;
 
       const dataToSubmit = {
-        action: 'create_or_update_folder',
+        action: folderAction,
+        route: 'create_or_update_folder',
         id: params.id,
         name: params.foldername,
         nonce: nonce,
@@ -132,9 +137,11 @@ export default {
     deleteFolder(id) {
       const ajaxUrl = window.ajax_object.ajax_url;
       const nonce = window.ajax_object.nonce;
+      const folderAction = 'folder_endpoints';
 
       const dataToSubmit = {
-        action: 'delete_folder',
+        action: folderAction,
+        route: 'delete_folder',
         id: id,
         nonce: nonce,
       }

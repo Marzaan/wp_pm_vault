@@ -162,10 +162,12 @@ export default {
     /***** AJAX CALL *****/
     getFolders() {
       const ajaxUrl = window.ajax_object.ajax_url;
+      const folderAction = 'folder_endpoints'
       window.jQuery.ajax({
         url: ajaxUrl,
         data: {
-          action: 'get_folders',
+          action: folderAction,
+          route: 'get_folders'
         },
         success: (response) => {
           this.folderData = response.data;
@@ -174,10 +176,12 @@ export default {
     },
     getItems() {
       const ajaxUrl = window.ajax_object.ajax_url;
+      const itemAction = 'item_endpoints';
       window.jQuery.ajax({
         url: ajaxUrl,
         data: {
-          action: 'get_items',
+          action: itemAction,
+          route: 'get_items',
         },
         success: (response) => {
           console.log(response);
@@ -193,9 +197,11 @@ export default {
     addOrUpdateItem( params ) {
       const ajaxUrl = window.ajax_object.ajax_url;
       const nonce = window.ajax_object.nonce;
+      const itemAction = 'item_endpoints';
 
       const dataToSubmit = {
-        action: 'create_or_update_item',
+        action: itemAction,
+        route: 'create_or_update_item',
         id: params.id,
         name: params.name,
         folderID: params.folderID,
@@ -225,9 +231,11 @@ export default {
     deleteItem(id) {
       const ajaxUrl = window.ajax_object.ajax_url;
       const nonce = window.ajax_object.nonce;
+      const itemAction = 'item_endpoints';
 
       const dataToSubmit = {
-        action: 'delete_item',
+        action: itemAction,
+        route: 'delete_item',
         id: id,
         nonce: nonce,
       }
