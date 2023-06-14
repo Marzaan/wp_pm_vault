@@ -10,12 +10,12 @@
             <div class="row">
               <div class="col-6 mb-4">
                 <label class="form-label fw-bold">Name</label>
-                <input type="text" class="form-control" placeholder="Name" required v-model="localSeclectedItemData.name" />
+                <input type="text" class="form-control" placeholder="Name" required v-model="localSelectedItemData.name" />
               </div>
               <div class="col-6 mb-4">
                 <label class="form-label fw-bold">Folder</label>
-                <select class="form-select" v-model="localSeclectedItemData.folderID">
-                  <option value="" v-if="!localSeclectedItemData.folderID">-- Select --</option>
+                <select class="form-select" v-model="localSelectedItemData.folderID">
+                  <option value="" v-if="!localSelectedItemData.folderID">-- Select --</option>
                   <option v-for="item in localFolderData" :key="item.id" :value="item.id">{{ item.foldername }}</option>
                 </select>
               </div>
@@ -29,7 +29,7 @@
                             ref="nameRef"
                             v-on:focus="$event.target.select()"
                             placeholder="Username"
-                            v-model="localSeclectedItemData.username"
+                            v-model="localSelectedItemData.username"
                             />
                             <span class="input-group-text">
                                 <i class="fa fa-clone cursor-pointer" aria-hidden="true" @click="copyToClipboard($refs.nameRef.focus())"></i>
@@ -45,7 +45,7 @@
                             v-on:focus="$event.target.select()"
                             :type="passwordVisibility"
                             placeholder="Password"
-                            v-model="localSeclectedItemData.password"
+                            v-model="localSelectedItemData.password"
                             />
                             <span class="input-group-text">
                             <i class="fa fa-clone cursor-pointer" @click="copyToClipboard($refs.passwordRef.focus())"></i>
@@ -79,7 +79,7 @@
                 </div>
               <div class="col-12 mb-4">
                 <label class="form-label fw-bold">Notes</label>
-                <textarea class="form-control" rows="3" v-model="localSeclectedItemData.notes"></textarea>
+                <textarea class="form-control" rows="3" v-model="localSelectedItemData.notes"></textarea>
               </div>
               <div class="col-12 mb-4">
                 <div class="row">
@@ -90,7 +90,7 @@
                       class="form-check-input"
                       type="checkbox"
                       id="favCheckbox"
-                      v-model="localSeclectedItemData.favorite"
+                      v-model="localSelectedItemData.favorite"
                     />
                   </div>
                 </div>
@@ -101,7 +101,7 @@
             <div>
                 <button v-if="!updatingItem" type="button" class="btn btn-dark" @click="handleItem()">Save</button>
                 <button v-else type="button" class="btn btn-success"
-                    @click="handleItem( localSeclectedItemData.id )">Update</button>
+                    @click="handleItem( localSelectedItemData.id )">Update</button>
                 <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
             </div>
             <div>
@@ -137,7 +137,7 @@ export default {
             loginUsername: '',
             loginPassword: '',
             loginUrls: [''],
-            localSeclectedItemData: {},
+            localSelectedItemData: {},
             isPasswordVisible: false,
             updatingItem: false,
             favorite: false,
@@ -147,10 +147,11 @@ export default {
         isEditModal() {
             if (this.isEditModal) {
                 this.updatingItem = true;
-                this.localSeclectedItemData = this.selectedItemData;
+                this.localSelectedItemData = this.selectedItemData;
             } else {
-                this.localSeclectedItemData = {};
+                this.localSelectedItemData = {};
                 this.updatingItem = false;
+                this.loginUrls = [''];
             }
         },
         folderData() {
@@ -176,25 +177,25 @@ export default {
     },
     methods: {
         handleItem( id = null ) {
-            const favorite = this.localSeclectedItemData.favorite ? 1 : 0;
+            const favorite = this.localSelectedItemData.favorite ? 1 : 0;
             const params = {
                 'id': id,
-                'name': this.localSeclectedItemData.name,
-                'folderID': this.localSeclectedItemData.folderID,
-                'username': this.localSeclectedItemData.username,
-                'password': this.localSeclectedItemData.password,
+                'name': this.localSelectedItemData.name,
+                'folderID': this.localSelectedItemData.folderID,
+                'username': this.localSelectedItemData.username,
+                'password': this.localSelectedItemData.password,
                 'urls': this.loginUrls,
-                'notes': this.localSeclectedItemData.notes,
+                'notes': this.localSelectedItemData.notes,
                 'favorite': favorite,
             };
-            this.localSeclectedItemData = {};
+            this.localSelectedItemData = {};
             this.loginUrls = [''];
             this.closeModal();
             this.$emit('add-or-update-item', params);
         },
         handleDeleteItem() {
             this.closeModal();
-            this.$emit('delete-item', this.localSeclectedItemData.id);
+            this.$emit('delete-item', this.localSelectedItemData.id);
         },
         addNewField(){
           this.loginUrls = [...this.loginUrls, ''];
