@@ -90,7 +90,7 @@
                       class="form-check-input"
                       type="checkbox"
                       id="favCheckbox"
-                      v-model="localSelectedItemData.favorite"
+                      v-model="isFavorite"
                     />
                   </div>
                 </div>
@@ -130,24 +130,23 @@ export default {
     ],
     data() {
         return {
-            note: '',
-            itemName: '',
-            folderID: '',
-            localFolderData: [],
-            loginUsername: '',
-            loginPassword: '',
-            loginUrls: [''],
-            localSelectedItemData: {},
-            isPasswordVisible: false,
-            updatingItem: false,
-            favorite: false,
+          loginUrls: [''],
+          isFavorite: false, 
+          localFolderData: [],
+          localSelectedItemData: {},
+          isPasswordVisible: false,
+          updatingItem: false,
         }
     },
     watch: {
         isEditModal() {
             if (this.isEditModal) {
+                let urls = this.selectedItemData.urls;
+                let favorite = this.selectedItemData.favorite;
                 this.updatingItem = true;
                 this.localSelectedItemData = this.selectedItemData;
+                this.loginUrls = urls ? JSON.parse(urls) : [''];
+                this.isFavorite = favorite === '1' ? true : false;
             } else {
                 this.localSelectedItemData = {};
                 this.updatingItem = false;
@@ -156,15 +155,6 @@ export default {
         },
         folderData() {
           this.localFolderData = this.folderData;
-        },
-        selectedItemData() {
-          let urls = this.selectedItemData.urls;
-          if(urls){
-            this.loginUrls = JSON.parse(urls);
-          }
-          else{
-            this.loginUrls = [''];
-          }
         }
     },
     computed: {
@@ -177,7 +167,7 @@ export default {
     },
     methods: {
         handleItem( id = null ) {
-            const favorite = this.localSelectedItemData.favorite ? 1 : 0;
+            const favorite = this.isFavorite ? 1 : 0;
             const params = {
                 'id': id,
                 'name': this.localSelectedItemData.name,
