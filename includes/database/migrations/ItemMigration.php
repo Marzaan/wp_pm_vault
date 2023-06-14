@@ -14,7 +14,7 @@ class ItemMigration {
         $sql = "CREATE TABLE $table_name (
 			id mediumint(9) NOT NULL AUTO_INCREMENT,
             user_id int NOT NULL,
-            folder_id int NOT NULL,
+            folder_id int default NULL,
             name varchar(255) NOT NULL,
             notes text,
             favorite boolean default 0,

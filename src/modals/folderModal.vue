@@ -26,8 +26,7 @@
           <div>
             <button v-if="!updatingFolder" type="button" class="btn btn-dark" @click="handleFolder()">Save</button>
             <button v-else type="button" class="btn btn-success"
-                    @click="handleFolder( selectedFolderID, selectedFolderName  )">Update
-            </button>
+                    @click="handleFolder( selectedFolderID, selectedFolderName  )">Update</button>
             <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
           </div>
           <div>

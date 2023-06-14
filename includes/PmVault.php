@@ -32,7 +32,8 @@ class PmVault {
 		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/controllers/ItemController.php');
 		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/config/Enqueue.php');
 		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/database/migrations/FolderMigration.php');
-		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/database/migrations/ItemMigration.php');	
+		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/database/migrations/ItemMigration.php');
+		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/helpers/Sanitization.php');
 	}
 
 	private function set_locale() {

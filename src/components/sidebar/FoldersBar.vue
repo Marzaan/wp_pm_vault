@@ -24,7 +24,7 @@
               </span>
             </li>
           </template>
-          <li class="list-group-item side-menu-item" @click="toggleModal()"><i class="fa fa-plus"></i> Add Folder</li>
+          <li class="list-group-item side-menu-item" @click="toggleModal"><i class="fa fa-plus"></i> Add Folder</li>
         </ul>
       </div>
     </div>
@@ -57,13 +57,12 @@ export default {
   },
   methods: {
     // Modal
-    toggleModal(isEdit = false) {
-      if (isEdit) {
-        this.isEditModal = true;
-      } else {
-        this.isEditModal = false;
-      }
+    toggleModal() {
       this.openModal = !this.openModal;
+      this.isEditModal = false;
+    },
+    toggleEditModal() {
+      this.isEditModal = true;
     },
 
     // Edit, Update, Delete Folder
@@ -72,7 +71,8 @@ export default {
         id: id,
         foldername: foldername,
       },
-          this.toggleModal(true);
+      this.toggleModal();
+      this.toggleEditModal();
     },
     updateFolderData(data) {
       if (data.updated) {

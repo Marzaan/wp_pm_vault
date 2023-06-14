@@ -43,25 +43,7 @@ export default {
     return {
       loading: true,
     };
-  },
-  methods: {
-    getItems() {
-      const ajaxUrl = window.ajax_object.ajax_url;
-      window.jQuery.ajax({
-        url: ajaxUrl,
-        data: {
-          action: 'get_items',
-        },
-        success: (response) => {
-          console.log(response);
-        }
-      });
-    },
-  },
-  mounted() {
-    console.log("HomeMounted");
-    this.getItems();
-  },
+  }
 };
 </script>
 

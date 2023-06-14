@@ -1,6 +1,7 @@
 <?php
 
 namespace PM_Vault\Controller;
+use PM_Vault\helper\Sanitization;
 
 class FolderController {
 
@@ -56,8 +57,8 @@ class FolderController {
         $user_id = wp_get_current_user()->ID;
 
         // Sanitize the data
-        $id = isset($_POST['id']) ? sanitize_text_field($_POST['id']) : '';
-        $name = isset($_POST['name']) ? sanitize_text_field($_POST['name']) : '';
+        $id = Sanitization::sanitize_value($_POST['id']);
+        $name = Sanitization::sanitize_value($_POST['name']);
 
         // Add New or Update Existing Folder
         $result = $this->wpdb->replace(
@@ -91,7 +92,7 @@ class FolderController {
         }
 
         // Delete the folder
-        $id = isset($_POST['id']) ? sanitize_text_field($_POST['id']) : '';
+        $id = Sanitization::sanitize_value($_POST['id']);
         $result = $this->wpdb->delete(
             $this->folderTable,
             ['id' => $id]
