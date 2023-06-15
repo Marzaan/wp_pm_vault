@@ -8,20 +8,27 @@
           </div>
           <ul class="list-group list-group-flush">
             <li class="list-group-item">
-              <ItemsBar/>
-              <FoldersBar/>
+              <ItemsBar
+                :select-menu = "selectMenu"
+                @set-select-menu = "setSelectMenu"
+              />
+              <FoldersBar
+                :select-menu = "selectMenu"
+                @set-select-menu = "setSelectMenu"
+              />
             </li>
             <li
                 class="list-group-item text-danger fw-bold text-center cursor-pointer"
-                @click=""
-            >
+                @click="">
               <i class="bi bi-trash"></i> Trash
             </li>
           </ul>
         </div>
       </div>
       <div class="col-xs-12 col-sm-6 col-md-9">
-        <ItemList/>
+        <ItemList
+          :select-menu = "selectMenu"
+        />
       </div>
     </div>
   </div>
@@ -41,8 +48,22 @@ export default {
   },
   data() {
     return {
-      loading: true,
+      selectMenu: {
+        menuType : '',
+        typeValue: ''
+      },
     };
+  },
+  watch: {
+    'selectMenu.typeValue': () => {
+      window.scroll({ top: 0, left: 0, behavior: 'smooth' });
+    }
+  },
+  methods: {
+    setSelectMenu( type, value ){
+      this.selectMenu.menuType = type;
+      this.selectMenu.typeValue = value;
+    }
   }
 };
 </script>

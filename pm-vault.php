@@ -29,12 +29,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * The plugin name.
+ * The plugin name and version
 */
 defined( 'PM_VAULT' ) or define( 'PM_VAULT', true );
-/**
- * Currently plugin version.
-*/
 defined( 'PM_VAULT_VERSION' ) or define( 'PM_VAULT_VERSION', '1.0.0' );
 
 /**
@@ -56,20 +53,6 @@ function deactivate_pm_vault() {
 register_activation_hook( __FILE__, 'activate_pm_vault' );
 register_deactivation_hook( __FILE__, 'deactivate_pm_vault' );
 
-/**
- * The core plugin class that is used to define internationalization,
- * admin-specific hooks, and public-facing site hooks.
-*/
-require plugin_dir_path( __FILE__ ) . 'includes/PmVault.php';
-
-/**
- * Begins execution of the plugin.
-*/
-function run_pm_vault() {
-	new PmVault();
-}
-run_pm_vault();
-
 // Redirect User on Activation
 function redirect_on_activation( $plugin )
 {
@@ -80,9 +63,21 @@ function redirect_on_activation( $plugin )
 }
 add_action('activated_plugin', 'redirect_on_activation');
 
+// Footer Text Modification
 function footer_text_modify( $text ) {
 	return 'PM Vault © 2023';
 }
 add_filter('admin_footer_text', 'footer_text_modify');
+
+/**
+ * Begins execution of the plugin.
+*/
+require plugin_dir_path( __FILE__ ) . 'includes/PmVault.php';
+
+function run_pm_vault() {
+	new PmVault();
+}
+run_pm_vault();
+
 
 ?>

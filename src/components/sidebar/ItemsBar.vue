@@ -11,10 +11,10 @@
          aria-labelledby="panelsStayOpen-headingTwo">
       <div class="accordion-body">
         <ul class="list-group list-group-flush">
-          <li class="list-group-item side-menu-item" @click="handleSelectMenu($event, 'items')"><i
+          <li :class="['list-group-item', 'side-menu-item', selectMenu.menuType === 'items' ? 'active-menu' : '']" @click="handleSelectMenu('items', 'items')"><i
               class="fa fa-building"></i> All Items
           </li>
-          <li class="list-group-item side-menu-item" @click="handleSelectMenu($event, 'favorite')"><i
+          <li :class="['list-group-item', 'side-menu-item', selectMenu.menuType === 'favorite' ? 'active-menu' : '']" @click="handleSelectMenu('favorite', 'favorite')"><i
               class="fa fa-star"></i> Favorites
           </li>
         </ul>
@@ -26,17 +26,16 @@
 <script>
 export default {
   props: {
-    selectMenu: Object,
-    setSelectMenu: Function,
+    selectMenu: Object
   },
+  emits: [
+    'set-select-menu'
+  ],
   methods: {
-    handleSelectMenu(event, type, value) {
-      this.setSelectMenu({
-        menuType: type,
-        typeValue: value || this.selectMenu.typeValue,
-      });
-    },
-  },
+    handleSelectMenu( type, value ) {
+      this.$emit('set-select-menu', type, value);
+    }
+  }
 };
 </script>
 

@@ -2,7 +2,7 @@
   <div class=" m-auto item-page">
     <div>
       <div class="section-title pb-4">
-        <h2>All Items</h2>
+        <h2>{{ titleByFilter }}</h2>
 
         <button @click="toggleModal" class="btn btn-primary hover-btn">
           New Item
@@ -44,7 +44,7 @@
             </div>
           </div>
         </div>
-        <div v-for="item in itemData" :key="item.id" class="listing-item">
+        <div v-for="item in filteredItems" :key="item.id" class="listing-item">
           <div class="checkbox-container col-md-2">
             <input type="checkbox" id="item-1"
                    @change=""
@@ -109,6 +109,9 @@ export default {
   components: {
     itemModal
   },
+  props: {
+    selectMenu: Object
+  },
   data() {
     return {
       openModal: false,
@@ -116,6 +119,30 @@ export default {
       itemData: [],
       folderData: [],
       selectedItemData: {},
+    }
+  },
+  computed: {
+    filteredItems(){
+      if(this.selectMenu.menuType === 'folder'){
+        return this.itemData.filter(item => (
+          item.folder_id === this.selectMenu.typeValue
+        ));
+      }
+      else if(this.selectMenu.menuType === 'favorite'){
+        return this.itemData.filter(item => (
+          item.favorite === '1'
+        ));
+      }
+      return this.itemData;
+    },
+    titleByFilter(){
+      if(this.selectMenu.menuType === 'folder'){
+        return 'Items By Folder'
+      }
+      else if(this.selectMenu.menuType === 'favorite'){
+        return 'Favorite Items';
+      }
+      return 'All Items';
     }
   },
   methods: {

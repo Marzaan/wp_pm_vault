@@ -14,8 +14,8 @@
           <template>
             <li v-for="data in folderData" :key="data.id"
                 class="list-group-item d-flex justify-content-between align-items-center folder-list">
-              <div
-                  @click=""
+              <div :class="['side-menu-item', selectMenu.typeValue === data.id ? 'active-menu' : '']"
+                  @click="handleSelectMenu( data.id )"
               >
                 <i class="bi bi-folder2"></i>{{ data.foldername }}
               </div>
@@ -47,6 +47,12 @@ export default {
   components: {
     folderModal,
   },
+  props: {
+    selectMenu: Object
+  },
+  emits: [
+    'set-select-menu'
+  ],
   data() {
     return {
       openModal: false,
@@ -63,6 +69,11 @@ export default {
     },
     toggleEditModal() {
       this.isEditModal = true;
+    },
+
+    // Select Folder Method for Filtering Item List
+    handleSelectMenu( value ) {
+      this.$emit('set-select-menu', 'folder', value);
     },
 
     // Edit, Update, Delete Folder
