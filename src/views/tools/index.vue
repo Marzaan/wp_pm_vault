@@ -7,13 +7,13 @@
             Tools
           </div>
           <ul class="list-group tools-items list-group-flush">
-            <li :class="['list-group-item', {active: selectMenu === 'generator'}]">
+            <li :class="['list-group-item', {active: selectMenu === 'generator'}]" @click="setSelectMenu('generator')">
               Generator
             </li>
-            <li :class="['list-group-item', {active: selectMenu === 'import'}]">
+            <li :class="['list-group-item', {active: selectMenu === 'import'}]" @click="setSelectMenu('import')">
               Import Data
             </li>
-            <li :class="['list-group-item', {active: selectMenu === 'export'}]">
+            <li :class="['list-group-item', {active: selectMenu === 'export'}]" @click="setSelectMenu('export')">
               Export Data
             </li>
           </ul>
@@ -42,24 +42,27 @@ export default {
   },
   data() {
     return {
-      selectMenu: "generator",
+      selectMenu: 'generator',
     };
   },
   computed: {
     getComponentName() {
       return (selectMenu) => {
         switch (selectMenu) {
-          case "generator":
-            return Generator;
-          case "import":
+          case 'import':
             return ImportData;
-          case "export":
+          case 'export':
             return ExportData;
           default:
             return Generator;
         }
       };
     },
+  },
+  methods: {
+    setSelectMenu( menu ) {
+      this.selectMenu = menu;
+    }
   }
 };
 </script>

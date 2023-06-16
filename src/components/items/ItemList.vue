@@ -42,7 +42,7 @@
             <input type="checkbox" id="item-1" :checked="checkedItems.includes(item.id)"
                    @click="toggleCheckedItem(item.id)"
             />
-            <label htmlFor="item-1"></label>
+            <label for="item-1"></label>
           </div>
           <div class="col-md-5 d-flex">
             <div class="item-name">
