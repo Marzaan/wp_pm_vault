@@ -17,11 +17,6 @@
                 @set-select-menu = "setSelectMenu"
               />
             </li>
-            <li
-                class="list-group-item text-danger fw-bold text-center cursor-pointer"
-                @click="">
-              <i class="bi bi-trash"></i> Trash
-            </li>
           </ul>
         </div>
       </div>

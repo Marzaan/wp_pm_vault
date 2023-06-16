@@ -29,7 +29,9 @@ class ItemController {
         $routes = [
             'get_items' => 'show',
             'create_or_update_item' => 'create_or_update',
-            'delete_item' => 'destroy'
+            'delete_item' => 'destroy',
+            'move_items' => 'move_items',
+            'delete_items' => 'delete_items'
         ];
 
         $route = Sanitization::sanitize_value($_REQUEST['route']);
@@ -138,6 +140,61 @@ class ItemController {
                 'id' => $result ? $id : ''
             ],
             'message' => $result ? 'Item Deleted Successfully' : 'Item Delete Failed'
+        ];
+        return wp_send_json($response);
+    }
+
+    public function move_items() {
+        // Verify the nonce
+        $nonce = $_POST['nonce'];
+        if (!wp_verify_nonce($nonce, 'pm_vault_nonce')) {
+            return wp_send_json_error('Invalid nonce.');
+        }
+        
+        // Sanitizing Data
+        $ids = rest_sanitize_array($_POST['ids']);
+        $folder_id = Sanitization::sanitize_value($_POST['folder_id']);
+
+        // Converting ids to a comma-separated string
+        $ids_string = implode(',', array_map('absint', $ids));
+
+        // SQL update query
+        $sql = $this->wpdb->prepare("UPDATE {$this->itemTable} SET folder_id = %s WHERE id IN ($ids_string)", $folder_id);
+
+        // Execute the update query
+        $result = $this->wpdb->query($sql);
+
+        // Prepare the response
+        $response = [
+            'success' => $result,
+            'message' => $result ? 'Items Moved Successfully' : 'Items Moving Failed'
+        ];
+        return wp_send_json($response);
+    }
+
+    public function delete_items() {
+        // Verify the nonce
+        $nonce = $_POST['nonce'];
+        if (!wp_verify_nonce($nonce, 'pm_vault_nonce')) {
+            return wp_send_json_error('Invalid nonce.');
+        }
+
+        // Sanitizing ID Array
+        $ids = rest_sanitize_array($_POST['ids']);
+
+        // Converting ids to a comma-separated string
+        $ids_string = implode(',', array_map('absint', $ids));
+
+        // SQL delete query
+        $sql = "DELETE FROM {$this->itemTable} WHERE id IN ($ids_string)";
+
+        // Execute the delete query
+        $result = $this->wpdb->query($sql);
+
+        // Prepare the response
+        $response = [
+            'success' => $result,
+            'message' => $result ? 'Items Deleted Successfully' : 'Items Delete Failed'
         ];
         return wp_send_json($response);
     }

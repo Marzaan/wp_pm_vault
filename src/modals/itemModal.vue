@@ -14,9 +14,9 @@
               </div>
               <div class="col-6 mb-4">
                 <label class="form-label fw-bold">Folder</label>
-                <select class="form-select" v-model="localSelectedItemData.folderID">
-                  <option value="" v-if="!localSelectedItemData.folderID">-- Select --</option>
-                  <option v-for="item in localFolderData" :key="item.id" :value="item.id">{{ item.foldername }}</option>
+                <select class="form-select" v-model="folderID">
+                  <option value="null">-- Select --</option>
+                  <option v-for="folder in localFolderData" :key="folder.id" :value="folder.id">{{ folder.foldername }}</option>
                 </select>
               </div>
                 <div class="row">
@@ -24,15 +24,13 @@
                         <label class="form-label fw-bold">Username</label>
                         <div class="input-group mb-3">
                             <input
-                            type="text"
-                            class="form-control"
-                            ref="nameRef"
-                            v-on:focus="$event.target.select()"
-                            placeholder="Username"
-                            v-model="localSelectedItemData.username"
+                              type="text"
+                              class="form-control"
+                              placeholder="Username"
+                              v-model="localSelectedItemData.username"
                             />
                             <span class="input-group-text">
-                                <i class="fa fa-clone cursor-pointer" aria-hidden="true" @click="copyToClipboard($refs.nameRef.focus())"></i>
+                                <i class="fa fa-clone cursor-pointer" aria-hidden="true" @click="copyToClipboard(localSelectedItemData.username)"></i>
                             </span>
                         </div>
                     </div>
@@ -40,15 +38,13 @@
                         <label class="form-label fw-bold">Password</label>
                         <div class="input-group mb-3">
                             <input
-                            class="form-control"
-                            ref="passwordRef"
-                            v-on:focus="$event.target.select()"
-                            :type="passwordVisibility"
-                            placeholder="Password"
-                            v-model="localSelectedItemData.password"
+                              class="form-control"
+                              :type="passwordVisibility"
+                              placeholder="Password"
+                              v-model="localSelectedItemData.password"
                             />
                             <span class="input-group-text">
-                            <i class="fa fa-clone cursor-pointer" @click="copyToClipboard($refs.passwordRef.focus())"></i>
+                              <i class="fa fa-clone cursor-pointer" @click="copyToClipboard(localSelectedItemData.password)"></i>
                             </span>
                             <span class="input-group-text">
                                 <div class="cursor-pointer" @click="togglePasswordVisibility">
@@ -63,13 +59,11 @@
                             <input
                                 type="text"
                                 class="form-control"
-                                ref="urlRef"
-                                v-on:focus="$event.target.select()"
                                 placeholder="https://google.com"
                                 v-model=loginUrls[index]
                             />
                             <span class="input-group-text">
-                            <i class="fa fa-clone cursor-pointer" @click="copyToClipboard($refs.urlRef.focus())"></i>
+                              <i class="fa fa-clone cursor-pointer" @click="copyToClipboard(loginUrls[index])"></i>
                             </span>
                         </div>
                     </div>
@@ -131,6 +125,7 @@ export default {
     data() {
         return {
           loginUrls: [''],
+          folderID: null,
           isFavorite: false, 
           localFolderData: [],
           localSelectedItemData: {},
@@ -145,12 +140,14 @@ export default {
                 let favorite = this.selectedItemData.favorite;
                 this.updatingItem = true;
                 this.localSelectedItemData = this.selectedItemData;
+                this.folderID = this.selectedItemData.folderID;
                 this.loginUrls = urls ? JSON.parse(urls) : [''];
                 this.isFavorite = favorite === '1' ? true : false;
             } else {
                 this.localSelectedItemData = {};
                 this.updatingItem = false;
                 this.loginUrls = [''];
+                this.folderID = null;
             }
         },
         folderData() {
@@ -171,7 +168,7 @@ export default {
             const params = {
                 'id': id,
                 'name': this.localSelectedItemData.name,
-                'folderID': this.localSelectedItemData.folderID,
+                'folderID': this.folderID,
                 'username': this.localSelectedItemData.username,
                 'password': this.localSelectedItemData.password,
                 'urls': this.loginUrls,
@@ -180,6 +177,7 @@ export default {
             };
             this.localSelectedItemData = {};
             this.loginUrls = [''];
+            this.folderID = null;
             this.closeModal();
             this.$emit('add-or-update-item', params);
         },
@@ -188,14 +186,14 @@ export default {
             this.$emit('delete-item', this.localSelectedItemData.id);
         },
         addNewField(){
-          this.loginUrls = [...this.loginUrls, ''];
+            this.loginUrls = [...this.loginUrls, ''];
         },
         togglePasswordVisibility() {
-          this.isPasswordVisible = !this.isPasswordVisible;
+            this.isPasswordVisible = !this.isPasswordVisible;
         },
-        copyToClipboard () {
-            document.execCommand('copy');
-          },
+        copyToClipboard ( text ) {
+            navigator.clipboard.writeText(text);
+        },
         closeModal() {
             this.$emit('toggle-modal');
         },

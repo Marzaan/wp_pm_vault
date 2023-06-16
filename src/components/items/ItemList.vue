@@ -11,32 +11,22 @@
       <div class="item-listing">
         <div class="listing-header">
           <div class="checkbox-container col-md-2">
-            <input type="checkbox" id="select-all" @click=""/>All
+            <input type="checkbox" id="select-all" :checked="isCheckedAll" @click="toggleCheckAll"/>All
           </div>
-          <div class="col-md-6">Name</div>
-          <div class="col-md-3">Folder</div>
+          <div class="col-md-5">Name</div>
+          <div class="col-md-4">Folder</div>
           <div class="col-md-1">
             <div class="three-dot-dropdown">
               <button type="button" class="three-dot-icon dropdown-toggle" data-bs-toggle="dropdown"
                       aria-expanded="false">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
+                      <div class="fa fa-ellipsis-v"></div>
               </button>
               <ul class="dropdown-menu">
                 <div>
-                  <li class="dropdown-item" @click="">
-                    Permanently Delete Selected
-                  </li>
-                </div>
-                <div>
-                  <li class="dropdown-item" @click="">
+                  <li class="dropdown-item" @click="toggleMoveItemModal">
                     Move Selected
                   </li>
-                  <li class="dropdown-item" @click="">
-                    Move Selected To Org..
-                  </li>
-                  <li class="dropdown-item" @click="">
+                  <li class="dropdown-item" @click="deleteCheckedItems">
                     Delete Selected
                   </li>
                 </div>
@@ -44,42 +34,44 @@
             </div>
           </div>
         </div>
+        <div v-if="filteredItems.length === 0" class="col-md-12 text-center fw-bold p-2">
+          <h3>There are no items to show</h3>
+        </div>
         <div v-for="item in filteredItems" :key="item.id" class="listing-item">
           <div class="checkbox-container col-md-2">
-            <input type="checkbox" id="item-1"
-                   @change=""
+            <input type="checkbox" id="item-1" :checked="checkedItems.includes(item.id)"
+                   @click="toggleCheckedItem(item.id)"
             />
             <label htmlFor="item-1"></label>
           </div>
-          <div class="col-md-6 d-flex">
+          <div class="col-md-5 d-flex">
             <div class="item-name">
               <p class="my-0 list-item-name" @click="handleEditItem( item )">{{ item.name }}</p>
             </div>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-4">
             <p v-if="item.foldername" class="list-own-name" title="Folder">
               {{ item.foldername }}
+            </p>
+            <p v-else>
+              --
             </p>
           </div>
           <div class="col-md-1">
             <div class="three-dot-dropdown">
               <button type="button" class="three-dot-icon dropdown-toggle" data-bs-toggle="dropdown"
                       aria-expanded="false">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
+                      <div class="fa fa-ellipsis-v"></div>
               </button>
               <ul class="dropdown-menu">
                 <div>
-                  <li class="dropdown-item" @click="">
-                    Restore Item
+                  <li class="dropdown-item" @click="copyToClipboard(item.username)">
+                    Copy username
                   </li>
-                  <li class="dropdown-item" @click="">
-                    Permanently Delete
+                  <li class="dropdown-item" @click="copyToClipboard(item.password)">
+                    Copy password
                   </li>
-                </div>
-                <div>
-                  <li class="dropdown-item" @click="">
+                  <li class="dropdown-item" @click="deleteItem(item.id)">
                     Delete Selected
                   </li>
                 </div>
@@ -98,16 +90,25 @@
       @delete-item="deleteItem"
       @toggle-modal="toggleModal"
     />
+    <moveItemModal
+      :open-move-item-modal="openMoveItemModal"
+      :folder-data="folderData"
+      :checked-items="checkedItems"
+      @move-checked-items="moveCheckedItems"
+      @toggle-move-item-modal="toggleMoveItemModal"
+    />
   </div>
 </template>
 
 <script>
 import itemModal from '../../modals/itemModal.vue';
+import moveItemModal from '../../modals/moveItemModal.vue';
 
 export default {
   name: 'ItemList',
   components: {
-    itemModal
+    itemModal,
+    moveItemModal
   },
   props: {
     selectMenu: Object
@@ -116,8 +117,11 @@ export default {
     return {
       openModal: false,
       isEditModal: false,
+      openMoveItemModal: false,
       itemData: [],
       folderData: [],
+      checkedItems: [],
+      isCheckedAll: false,
       selectedItemData: {},
     }
   },
@@ -153,6 +157,38 @@ export default {
     },
     toggleEditModal() {
       this.isEditModal = true;
+    },
+
+    // Checkbox Handling
+    toggleCheckAll(){
+      if(this.isCheckedAll){
+        this.isCheckedAll = false;
+        this.checkedItems = [];
+      }
+      else{
+        this.isCheckedAll = true;
+        this.checkedItems = this.filteredItems.map(item => item.id);
+      }
+    },
+    toggleCheckedItem( selectedID ){
+      if(this.checkedItems.includes(selectedID)){
+        this.checkedItems = this.checkedItems.filter((id) => id !== selectedID);
+        this.isCheckedAll = false;
+      }
+      else{
+        this.checkedItems = [...this.checkedItems, selectedID];
+        if(this.checkedItems.length === this.filteredItems.length){
+          this.isCheckedAll = true;
+        }
+      }
+    },
+    toggleMoveItemModal(){
+      this.openMoveItemModal = !this.openMoveItemModal;
+    },
+
+    // Copy To Clipboard
+    copyToClipboard ( text ) {
+        navigator.clipboard.writeText(text);
     },
 
     // Edit, Update, Delete Item
@@ -276,6 +312,71 @@ export default {
           if (response.success) {
             console.log("response", response);
             this.deleteItemData(response.data.id);
+          } else {
+            console.log("Server Error", response);
+          }
+        }
+      });
+    },
+
+    // API Call for Selected Items
+    moveCheckedItems( folderID ){
+      const ajaxUrl = window.ajax_object.ajax_url;
+      const nonce = window.ajax_object.nonce;
+      const itemAction = 'item_endpoints';
+
+      // Converting to Json without Key
+      let selectedItems = JSON.stringify(this.checkedItems);
+      selectedItems = JSON.parse(selectedItems);
+
+      const dataToSubmit = {
+        action: itemAction,
+        route: 'move_items',
+        ids: selectedItems,
+        folder_id: folderID,
+        nonce: nonce,
+      };
+      console.log("dataToSubmit", dataToSubmit);
+
+      window.jQuery.ajax({
+        url: ajaxUrl,
+        data: dataToSubmit,
+        method: 'POST',
+        success: (response) => {
+          if (response.success) {
+            this.getItems();
+            this.checkedItems = [];
+          } else {
+            console.log("Server Error", response);
+          }
+        }
+      });
+    },
+    deleteCheckedItems(){
+      const ajaxUrl = window.ajax_object.ajax_url;
+      const nonce = window.ajax_object.nonce;
+      const itemAction = 'item_endpoints';
+
+      // Converting to Json without Key
+      let selectedItems = JSON.stringify(this.checkedItems);
+      selectedItems = JSON.parse(selectedItems);
+
+      const dataToSubmit = {
+        action: itemAction,
+        route: 'delete_items',
+        ids: selectedItems,
+        nonce: nonce,
+      };
+      console.log("dataToSubmit", dataToSubmit);
+
+      window.jQuery.ajax({
+        url: ajaxUrl,
+        data: dataToSubmit,
+        method: 'POST',
+        success: (response) => {
+          if (response.success) {
+            this.getItems();
+            this.checkedItems = [];
           } else {
             console.log("Server Error", response);
           }

@@ -13,6 +13,8 @@
     &.active-menu {
       color: #007bff;
       font-weight: 500;
+      font-size: 1.2rem;
+      transition: 0.5s;
     }
     &:hover {
       color: #007bff;
