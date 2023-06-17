@@ -42,7 +42,7 @@
                 class="form-control"
                 type="number"
                 @blur="generatePassword"
-                v-model="numLength"
+                v-model="charLength"
             />
           </div>
           <div class="col-sm-12 col-md-4 mb-4">
@@ -163,7 +163,7 @@ export default {
   name: "Generator",
   data() {
     return {
-      numLength: 5,
+      charLength: 5,
       minNumber: 1,
       minSpecialChar: 1,
       includeUpperCase: true,
@@ -178,8 +178,8 @@ export default {
     };
   },
   watch: {
-    numLength() {
-      this.numLength = this.numLength > 99 ? 99 : this.numLength;
+    charLength() {
+      this.charLength = this.charLength > 99 ? 99 : this.charLength;
     },
     minNumber() {
       this.minNumber = this.minNumber > 9 ? 9 : this.minNumber;
@@ -191,11 +191,22 @@ export default {
       this.wordLength = this.wordLength > 20 ? 20 : this.wordLength;
     },
     passwordType() {
-      if(this.passwordType === 'password') {
-        this.generatePassword();
-      } else {
-        this.generatePhrase();
-      }
+      this.regeneratePassword();
+    },
+    includeLowerCase() {
+      this.generatePassword();
+    },
+    includeUpperCase() {
+      this.generatePassword();
+    },
+    includeNumbers() {
+      this.generatePassword();
+    },
+    includeSpecialChars() {
+      this.generatePassword();
+    },
+    avoidAmbiguousChars() {
+      this.generatePassword();
     }
   },
   methods: {
@@ -205,7 +216,7 @@ export default {
     generatePhrase () {
         const chance = new Chance();
         const generatedPhrase  = chance.sentence({ words: this.wordLength }).replace(/\s/g, this.wordSeparator);
-       this.showPassword = generatedPhrase;
+        this.showPassword = generatedPhrase;
     },
     generatePassword() {
       const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -214,67 +225,80 @@ export default {
       const specialChars = '!@#$%^&*()_+~`}{[]:;?><,./-=';
 
       let generatedPassword = '';
-      let passwordString = '';
-      let passStringLen;
-      let generatedPassLen;
+      let generatedPasswordLength;
+      let selectedCharSets = '';
+      let selectedCharSetsLength;
       let character;
 
+      // Fill the minimum special character
       for (let i = 0; i < this.minSpecialChar; i++) {
         character = specialChars.charAt(Math.floor(Math.random() * 30));
         generatedPassword += character;
       }
 
+      // Fill the minimum number
       for (let i = 0; i < this.minNumber; i++) {
         character = Math.floor(Math.random() * 10);
         generatedPassword += character;
       }
 
+      // Include Number if selected but not filled the minimum number
       if (this.includeNumbers) {
-        passwordString += digitChars;
-        if (this.minNumber === 0) {
+        selectedCharSets += digitChars;
+        if (!this.minNumber) {
           character = Math.floor(Math.random() * 10);
           generatedPassword += character;
         }
       }
 
+      // Include Special Chars if selected but not filled the minimum special chars
       if (this.includeSpecialChars) {
-        passwordString += specialChars;
-        if (this.minSpecialChar === 0) {
+        selectedCharSets += specialChars;
+        if (!this.minSpecialChar) {
           character = specialChars.charAt(Math.floor(Math.random() * 30));
           generatedPassword += character;
         }
       }
 
+      // Include Lowercase Chars if selected
       if (this.includeUpperCase) {
-        passwordString += uppercaseChars;
+        selectedCharSets += uppercaseChars;
         character = uppercaseChars.charAt(Math.floor(Math.random() * 26));
         generatedPassword += character;
       }
 
+      // Include Uppercase Chars if selected
       if (this.includeLowerCase) {
-        passwordString += lowercaseChars;
+        selectedCharSets += lowercaseChars;
         character = lowercaseChars.charAt(Math.floor(Math.random() * 26));
         generatedPassword += character;
       }
 
-      passStringLen = passwordString.length;
-      generatedPassLen = generatedPassword.length;
+      // Get the length of selected charsets
+      selectedCharSetsLength = selectedCharSets.length;
+      generatedPasswordLength = generatedPassword.length;
 
-      if (passStringLen === 0) {
+      // Update the character length if generated password length gets higher
+      this.charLength = this.charLength < generatedPasswordLength ? generatedPasswordLength : this.charLength;
+
+      // If there is no checkbox checked, include lowercase chars by default
+      if (selectedCharSetsLength === 0) {
         this.includeLowerCase = true;
       }
 
-      while (generatedPassLen < this.numLength) {
-        character = passwordString.charAt(Math.floor(Math.random() * passStringLen));
+      // Fill the remaining password length
+      while (generatedPasswordLength < this.charLength) {
+        character = selectedCharSets.charAt(Math.floor(Math.random() * selectedCharSetsLength));
         generatedPassword += character;
-        generatedPassLen++;
+        generatedPasswordLength++;
       }
 
+      // Remove ambiguous chars
       if (this.avoidAmbiguousChars) {
         generatedPassword = generatedPassword.replace(/(0O|1l|2Z|5S|8B|O0|l1|Z2|S5|B8)/g, '2k');
       }
 
-      this.numLength = generatedPassLen;
+      // Assign the generated password to the view field
       this.showPassword = generatedPassword;
     },
     regeneratePassword(){
