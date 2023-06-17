@@ -1,23 +1,14 @@
 <?php
 
 namespace PM_Vault\Controller;
+use PM_Vault\Controller\BaseController;
 use PM_Vault\helper\Sanitization;
 
-class ItemController {
-    protected $wpdb;
-    protected $userTable;
-    protected $itemTable;
-    protected $folderTable;
+class ItemController extends BaseController{
 
     public function __construct()
     {
-        global $wpdb;
-
-        $this->userTable = $wpdb->prefix . 'users';
-        $this->itemTable = $wpdb->prefix . 'pm_vault_items';
-        $this->folderTable = $wpdb->prefix . 'pm_vault_folders';
-        $this->wpdb = $wpdb;
-        $this->register_routes();
+        parent::__construct();
     }
 
     public function register_routes()
@@ -34,13 +25,14 @@ class ItemController {
             'delete_items' => 'delete_items'
         ];
 
+        $this->verify_nonce($_REQUEST['nonce']);
         $route = Sanitization::sanitize_value($_REQUEST['route']);
 
         $this->{$routes[$route]}();
         return;
     }
 
-    public function show() {
+    private function show() {
         // Get the current user's ID
         $user_id = wp_get_current_user()->ID;
 
@@ -63,13 +55,7 @@ class ItemController {
         return wp_send_json($response);
     }
 
-    public function create_or_update() {
-        // Verify the nonce
-        $nonce = $_POST['nonce'];
-        if (!wp_verify_nonce($nonce, 'pm_vault_nonce')) {
-            return wp_send_json_error('Invalid nonce.');
-        }
-
+    private function create_or_update() {
         // Get the current user's ID
         $user_id = wp_get_current_user()->ID;
 
@@ -119,13 +105,7 @@ class ItemController {
         return wp_send_json($response);
     }
 
-    public function destroy() {
-        // Verify the nonce
-        $nonce = $_POST['nonce'];
-        if (!wp_verify_nonce($nonce, 'pm_vault_nonce')) {
-            return wp_send_json_error('Invalid nonce.');
-        }
-
+    private function destroy() {
         // Delete the item
         $id = Sanitization::sanitize_value($_POST['id']);
         $result = $this->wpdb->delete(
@@ -144,13 +124,7 @@ class ItemController {
         return wp_send_json($response);
     }
 
-    public function move_items() {
-        // Verify the nonce
-        $nonce = $_POST['nonce'];
-        if (!wp_verify_nonce($nonce, 'pm_vault_nonce')) {
-            return wp_send_json_error('Invalid nonce.');
-        }
-        
+    private function move_items() {
         // Sanitizing Data
         $ids = rest_sanitize_array($_POST['ids']);
         $folder_id = Sanitization::sanitize_value($_POST['folder_id']);
@@ -172,13 +146,7 @@ class ItemController {
         return wp_send_json($response);
     }
 
-    public function delete_items() {
-        // Verify the nonce
-        $nonce = $_POST['nonce'];
-        if (!wp_verify_nonce($nonce, 'pm_vault_nonce')) {
-            return wp_send_json_error('Invalid nonce.');
-        }
-
+    private function delete_items() {
         // Sanitizing ID Array
         $ids = rest_sanitize_array($_POST['ids']);
 

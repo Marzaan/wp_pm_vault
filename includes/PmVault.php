@@ -6,6 +6,8 @@ use PM_Vault\Enqueue;
 use PM_Vault\TextDomain;
 use PM_Vault\Controller\FolderController;
 use PM_Vault\Controller\ItemController;
+use PM_Vault\Controller\ExportController;
+use PM_Vault\Controller\ImportController;
 
 class PmVault {
 
@@ -28,8 +30,11 @@ class PmVault {
 	private function load_dependencies() {
 		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/config/TextDomain.php');
 		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/database/DatabaseMigrations.php');
+		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/controllers/BaseController.php');
 		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/controllers/FolderController.php');
 		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/controllers/ItemController.php');
+		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/controllers/ExportController.php');
+		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/controllers/ImportController.php');
 		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/config/Enqueue.php');
 		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/database/migrations/FolderMigration.php');
 		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/database/migrations/ItemMigration.php');
@@ -62,7 +67,9 @@ class PmVault {
     }
 
 	public function register_controllers() {
-		new FolderController();
-		new ItemController();
+		(new ItemController())->register_routes();
+		(new FolderController())->register_routes();
+		(new ExportController())->register_routes();
+		(new ImportController())->register_routes();
 	}
 }

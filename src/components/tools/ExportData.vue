@@ -9,7 +9,7 @@
           history or attachments.</p>
       </div>
     </div>
-    <button @click="" class="btn btn-primary hover-btn">
+    <button @click="handleSubmit" class="btn btn-primary hover-btn">
       Export Data
     </button>
   </div>
@@ -18,5 +18,45 @@
 <script>
 export default {
   name: "ExportData",
+  data() {
+    return {
+      exportData: [],
+    };
+  },
+  methods: {
+    handleSubmit() {
+      const url = window.URL.createObjectURL(new Blob([this.exportData]));
+      const currentTime = new Date();
+      const fileName = "export_" + currentTime.getTime() + ".csv";
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
+    },
+
+    /**** AJAX Call ****/
+    getDataForExport() {
+      const ajaxUrl = window.ajax_object.ajax_url;
+      const nonce = window.ajax_object.nonce;
+      const exportAction = 'export_endpoints';
+      window.jQuery.ajax({
+        url: ajaxUrl,
+        data: {
+          action: exportAction,
+          route: 'export_items',
+          nonce: nonce,
+        },
+        method: 'GET',
+        success: (response) => {
+          this.exportData = response.data;
+          console.log(response.data);
+        }
+      });
+    }
+  },
+  mounted() {
+    this.getDataForExport();
+  },
 };
 </script>

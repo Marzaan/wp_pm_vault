@@ -1,21 +1,14 @@
 <?php
 
 namespace PM_Vault\Controller;
+use PM_Vault\Controller\BaseController;
 use PM_Vault\helper\Sanitization;
 
-class FolderController {
+class FolderController extends BaseController {
 
-    protected $wpdb;
-    protected $folderTable;
-    protected $userTable;
-
-    public function __construct() {
-        global $wpdb;
-
-        $this->folderTable = $wpdb->prefix . 'pm_vault_folders';
-        $this->userTable = $wpdb->prefix . 'users';
-        $this->wpdb = $wpdb;
-        $this->register_routes();
+    public function __construct()
+    {
+        parent::__construct();
     }
 
     public function register_routes() {
@@ -29,13 +22,15 @@ class FolderController {
             'delete_folder' => 'destroy'
         ];
 
+        $this->verify_nonce($_REQUEST['nonce']);
         $route = Sanitization::sanitize_value($_REQUEST['route']);
 
         $this->{$routes[$route]}();
         return;
     }
 
-    public function show() {
+
+    private function show() {
         // Get the current user's ID
         $user_id = wp_get_current_user()->ID;
 
@@ -57,13 +52,7 @@ class FolderController {
         return wp_send_json($response);
     }
 
-    public function create_or_update() {
-        // Verify the nonce
-        $nonce = $_POST['nonce'];
-        if (!wp_verify_nonce($nonce, 'pm_vault_nonce')) {
-            return wp_send_json_error('Invalid nonce.');
-        }
-
+    private function create_or_update() {
         // Get the current user's ID
         $user_id = wp_get_current_user()->ID;
 
@@ -95,13 +84,7 @@ class FolderController {
         return wp_send_json($response);
     }
 
-    public function destroy() {
-        // Verify the nonce
-        $nonce = $_POST['nonce'];
-        if (!wp_verify_nonce($nonce, 'pm_vault_nonce')) {
-            return wp_send_json_error('Invalid nonce.');
-        }
-
+    private function destroy() {
         // Delete the folder
         $id = Sanitization::sanitize_value($_POST['id']);
         $result = $this->wpdb->delete(

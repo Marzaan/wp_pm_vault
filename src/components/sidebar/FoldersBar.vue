@@ -104,12 +104,14 @@ export default {
     /********* AJAX Call *********/
     getFolders() {
       const ajaxUrl = window.ajax_object.ajax_url;
+      const nonce = window.ajax_object.nonce;
       const folderAction = 'folder_endpoints';
       window.jQuery.ajax({
         url: ajaxUrl,
         data: {
           action: folderAction,
-          route: 'get_folders'
+          route: 'get_folders',
+          nonce: nonce
         },
         method: 'GET',
         success: (response) => {
