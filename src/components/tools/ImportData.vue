@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import router from "../../routes.js";
 export default {
   name: "ImportData",
   data() {
@@ -60,20 +61,12 @@ export default {
         processData: false,
         success: (response) => {
           if (response.success) {
-            console.log(response);
+            router.push({ path: '/' });
           } else {
             console.log("Server Error", response);
           }
         }
       })
-      .always(function(res) {
-          console.log("res", res);
-          // remove loading image maybe
-        })
-        .fail(function(res) {
-          console.log("fail", res);
-          // handle request failures
-        });
     }
   }
 };
