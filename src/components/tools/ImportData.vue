@@ -24,6 +24,8 @@
 </template>
 
 <script>
+import Vue from 'vue';
+import Toasted from 'vue-toasted';
 import router from "../../routes.js";
 export default {
   name: "ImportData",
@@ -36,13 +38,24 @@ export default {
     setInputFile( e ) {
       this.inputFile = e.target.files[0];
     },
+
+    // Toaster
+    showToast(message, type) {
+      this.$toasted.show(message, {
+        theme: "toasted-primary",
+        position: "top-center",
+        duration: 3000,
+        type: type,
+      });
+    },
+
     handleFileSubmit(){
       const ajaxUrl = window.ajax_object.ajax_url;
       const nonce = window.ajax_object.nonce;
       const importAction = 'import_endpoints';
 
       if (this.inputFile === '') {
-        console.log("No file selected.");
+        this.showToast('No file selected.', 'error');
         return;
       }
 
@@ -51,23 +64,25 @@ export default {
       dataToSubmit.append('route', 'import_items');
       dataToSubmit.append('file', this.inputFile);
       dataToSubmit.append('nonce', nonce);
-      console.log("dataToSubmit", dataToSubmit);
 
       window.jQuery.ajax({
         url: ajaxUrl,
         data: dataToSubmit,
         method: 'POST',
         contentType: false,
-        processData: false,
-        success: (response) => {
-          if (response.success) {
-            router.push({ path: '/' });
-          } else {
-            console.log("Server Error", response);
-          }
-        }
+        processData: false
       })
+      .then(() => {
+        this.showToast('Items Imported Successfully', 'success');
+        router.push({ path: '/' });
+      })
+      .fail( error => {
+        this.showToast(error.responseJSON.data.message, 'error');
+      });
     }
-  }
+  },
+  created() {
+    Vue.use(Toasted);
+  },
 };
 </script>

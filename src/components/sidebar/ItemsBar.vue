@@ -12,7 +12,7 @@
       <div class="accordion-body">
         <ul class="list-group list-group-flush">
           <li :class="['list-group-item', 'side-menu-item', selectMenu.menuType === 'items' ? 'active-menu' : '']" @click="handleSelectMenu('items', 'items')"><i
-              class="fa fa-building"></i> All Items
+              class="fa fa-building"></i>   All Items
           </li>
           <li :class="['list-group-item', 'side-menu-item', selectMenu.menuType === 'favorite' ? 'active-menu' : '']" @click="handleSelectMenu('favorite', 'favorite')"><i
               class="fa fa-star"></i> Favorites

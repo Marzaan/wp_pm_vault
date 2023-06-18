@@ -45,11 +45,14 @@ class FolderController extends BaseController {
 
         // Get the folders
         $folders = $this->wpdb->get_results($prepared_query);
-        $response = [
-            'success' => true,
-            'data' => $folders
-        ];
-        return wp_send_json($response);
+
+        // Send Response
+        if($folders){
+            $this->sendJsonSuccess($folders, 200);
+        }
+        else{
+            $this->sendJsonError("Internal Server Error", 500);
+        }
     }
 
     private function create_or_update() {
@@ -59,6 +62,11 @@ class FolderController extends BaseController {
         // Sanitize the data
         $id = Sanitization::sanitize_value($_POST['id']);
         $name = Sanitization::sanitize_value($_POST['name']);
+
+        if(!$name){
+            $this->sendJsonError("Folder Name is Required", 400);
+            return;
+        }
 
         // Add New or Update Existing Folder
         $result = $this->wpdb->replace(
@@ -85,21 +93,35 @@ class FolderController extends BaseController {
     }
 
     private function destroy() {
-        // Delete the folder
-        $id = Sanitization::sanitize_value($_POST['id']);
-        $result = $this->wpdb->delete(
-            $this->folderTable,
-            ['id' => $id]
+        // Get the current user's ID
+        $user_id = wp_get_current_user()->ID;
+
+        // Requested Folder ID
+        $folder_id = Sanitization::sanitize_value($_POST['id']);
+
+        // Check if the folder exist and belong to the user
+        $folder = $this->wpdb->get_row(
+            $this->wpdb->prepare(
+                "SELECT id FROM {$this->folderTable} WHERE id = %d AND user_id = %d", $folder_id, $user_id
+            )
         );
 
-        // Prepare the response
-        $response = [
-            'success' => $result,
-            'data' => [
-                'id' => $result ? $id : ''
-            ],
-            'message' => $result ? 'Folder Deleted Successfully' : 'Folder Delete Failed'
-        ];
-        return wp_send_json($response);
+        if (!$folder) {
+            $this->sendJsonError("The folder doesn't exist or doesn't belong to the logged-in user.", 404);
+            return;
+        }
+
+        // Delete the folder
+        $result = $this->wpdb->delete(
+            $this->folderTable,
+            ['id' => $folder_id]
+        );
+
+        if($result){
+            $this->sendJsonResponse(['id' => $folder_id], 'Folder Deleted Successfully', 200);
+        }
+        else{
+            $this->sendJsonError("Internal Server Error", 500);
+        }
     }
 }

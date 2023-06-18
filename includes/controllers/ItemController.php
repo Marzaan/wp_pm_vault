@@ -48,11 +48,14 @@ class ItemController extends BaseController{
 
         // Get the items
         $items = $this->wpdb->get_results($prepared_query);
-        $response = [
-            'success' => true,
-            'data' => $items
-        ];
-        return wp_send_json($response);
+        
+        // Send Response
+        if($items){
+            $this->sendJsonSuccess($items, 200);
+        }
+        else{
+            $this->sendJsonError("Internal Server Error", 500);
+        }
     }
 
     private function create_or_update() {
@@ -72,6 +75,11 @@ class ItemController extends BaseController{
 
         // Remove extra slashes from urls
         $urls = stripslashes($urls);
+
+        if(!$name || !$username || !$password){
+            $this->sendJsonError("Please fill all the required fields", 400);
+            return;
+        }
 
         // Data to Update
         $updatedData = [
@@ -102,26 +110,40 @@ class ItemController extends BaseController{
             ],
             'message' => $result ? (($id) ? 'Item Updated Successfully' : 'Item Created Successfully') : 'Item Update Failed'
         ];
-        return wp_send_json($response);
+        wp_send_json($response);
     }
 
     private function destroy() {
-        // Delete the item
-        $id = Sanitization::sanitize_value($_POST['id']);
-        $result = $this->wpdb->delete(
-            $this->itemTable,
-            ['id' => $id]
+        // Get the current user's ID
+        $user_id = wp_get_current_user()->ID;
+
+        // Requested Item ID
+        $item_id = Sanitization::sanitize_value($_POST['id']);
+
+        // Check if the item exist and belong to the user
+        $item = $this->wpdb->get_row(
+            $this->wpdb->prepare(
+                "SELECT id FROM {$this->itemTable} WHERE id = %d AND user_id = %d", $item_id, $user_id
+            )
         );
 
-        // Prepare the response
-        $response = [
-            'success' => $result,
-            'data' => [
-                'id' => $result ? $id : ''
-            ],
-            'message' => $result ? 'Item Deleted Successfully' : 'Item Delete Failed'
-        ];
-        return wp_send_json($response);
+        if (!$item) {
+            $this->sendJsonError("The item doesn't exist or doesn't belong to the logged-in user.", 404);
+            return;
+        }
+
+        // Delete the folder
+        $result = $this->wpdb->delete(
+            $this->itemTable,
+            ['id' => $item_id]
+        );
+
+        if($result){
+            $this->sendJsonResponse(['id' => $item_id], 'Item Deleted Successfully', 200);
+        }
+        else{
+            $this->sendJsonError("Internal Server Error", 500);
+        }
     }
 
     private function move_items() {
@@ -138,15 +160,19 @@ class ItemController extends BaseController{
         // Execute the update query
         $result = $this->wpdb->query($sql);
 
-        // Prepare the response
-        $response = [
-            'success' => $result,
-            'message' => $result ? 'Items Moved Successfully' : 'Items Moving Failed'
-        ];
-        return wp_send_json($response);
+        // Send The Response
+        if($result){
+            $this->sendJsonResponse($result,'Items Moved Successfully', 200);
+        }
+        else{
+            $this->sendJsonError("Internal Server Error", 500);
+        }
     }
 
     private function delete_items() {
+        // Get the current user's ID
+        $user_id = wp_get_current_user()->ID;
+
         // Sanitizing ID Array
         $ids = rest_sanitize_array($_POST['ids']);
 
@@ -154,16 +180,20 @@ class ItemController extends BaseController{
         $ids_string = implode(',', array_map('absint', $ids));
 
         // SQL delete query
-        $sql = "DELETE FROM {$this->itemTable} WHERE id IN ($ids_string)";
+        $sql = "DELETE FROM {$this->itemTable} WHERE id IN ($ids_string) AND user_id = %d";
+
+        // Prepare the SQL query with user ID placeholder
+        $sql = $this->wpdb->prepare($sql, $user_id);
 
         // Execute the delete query
         $result = $this->wpdb->query($sql);
 
-        // Prepare the response
-        $response = [
-            'success' => $result,
-            'message' => $result ? 'Items Deleted Successfully' : 'Items Delete Failed'
-        ];
-        return wp_send_json($response);
+        // Send The Response
+        if($result){
+            $this->sendJsonResponse($result,'Items Deleted Successfully', 200);
+        }
+        else{
+            $this->sendJsonError("Internal Server Error", 500);
+        }
     }
 }

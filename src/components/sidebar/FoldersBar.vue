@@ -17,7 +17,7 @@
               <div :class="['side-menu-item', selectMenu.typeValue === data.id ? 'active-menu' : '']"
                   @click="handleSelectMenu( data.id )"
               >
-                <i class="bi bi-folder2"></i>{{ data.foldername }}
+                <i class="fa fa-folder" aria-hidden="true"></i>  {{ data.foldername.length > 15 ? data.foldername.slice(0, 15) + ".." : data.foldername }}
               </div>
               <span>
                 <i class="fa fa-ellipsis-v" @click="handleEditFolder(data.id, data.foldername)"></i>
@@ -36,11 +36,14 @@
         @delete-folder="deleteFolder"
         @toggle-modal="toggleModal"
     />
+    <div v-if="openModal" class="modal-backdrop fade show"></div>
   </div>
 </template>
 
 <script>
-import folderModal from '../../modals/folderModal.vue';
+import Vue from 'vue';
+import Toasted from 'vue-toasted';
+import folderModal from '../modals/folderModal.vue';
 
 export default {
   name: "FoldersBar",
@@ -71,6 +74,16 @@ export default {
       this.isEditModal = true;
     },
 
+    // Toaster
+    showToast(message, type) {
+      this.$toasted.show(message, {
+        theme: "toasted-primary",
+        position: "top-center",
+        duration: 3000,
+        type: type,
+      });
+    },
+
     // Select Folder Method for Filtering Item List
     handleSelectMenu( value ) {
       this.$emit('set-select-menu', 'folder', value);
@@ -87,6 +100,7 @@ export default {
     },
     updateFolderData(data) {
       if (data.updated) {
+        this.showToast('Folder Updated Successfully', 'success');
         this.folderData = this.folderData.map(folder => {
           if (folder.id === data.id) {
             return {...folder, foldername: data.name};
@@ -94,10 +108,12 @@ export default {
           return folder;
         });
       } else {
+        this.showToast('Folder Added Successfully', 'success');
         this.getFolders();
       }
     },
     deleteFolderData(id) {
+      this.showToast('Folder Deleted Successfully', 'success');
       this.folderData = this.folderData.filter(folder => folder.id !== id);
     },
 
@@ -114,10 +130,14 @@ export default {
           nonce: nonce
         },
         method: 'GET',
-        success: (response) => {
+      })
+      .then( response => {
           this.folderData = response.data;
           console.log(this.folderData);
-        }
+      })
+      .fail( error => {
+        this.showToast(error.responseJSON.data.message, 'error');
+        console.log("failed", error.responseJSON.data.message);
       });
     },
     addOrUpdateFolder(params) {
@@ -132,19 +152,19 @@ export default {
         name: params.foldername,
         nonce: nonce,
       }
-      console.log("dataToSubmit", dataToSubmit);
 
       window.jQuery.ajax({
         url: ajaxUrl,
         data: dataToSubmit,
-        method: 'POST',
-        success: (response) => {
-          if (response.success) {
-            this.updateFolderData(response.data);
-          } else {
-            console.log("Server Error", response);
-          }
-        }
+        method: 'POST'
+      })
+      .then( response => {
+        console.log("response", response);
+        this.updateFolderData(response.data);
+      })
+      .fail( error => {
+        this.showToast(error.responseJSON.data.message, 'error');
+        console.log("failed", error.responseJSON.data.message);
       });
     },
     deleteFolder(id) {
@@ -158,22 +178,24 @@ export default {
         id: id,
         nonce: nonce,
       }
-      console.log("dataToSubmit", dataToSubmit);
 
       window.jQuery.ajax({
         url: ajaxUrl,
         data: dataToSubmit,
-        method: 'POST',
-        success: (response) => {
-          if (response.success) {
-            console.log("response", response);
-            this.deleteFolderData(response.data.id);
-          } else {
-            console.log("Server Error", response);
-          }
-        }
+        method: 'POST'
+      })
+      .then( response => {
+        console.log("response", response);
+        this.deleteFolderData(response.data.id);
+      })
+      .fail( error => {
+        this.showToast(error.responseJSON.data.message, 'error');
+        console.log("failed", error.responseJSON.data.message);
       });
     }
+  },
+  created() {
+    Vue.use(Toasted);
   },
   mounted() {
     this.getFolders();

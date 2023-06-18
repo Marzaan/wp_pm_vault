@@ -18,9 +18,32 @@ class BaseController {
         $this->wpdb = $wpdb;
     }
 
-    protected function verify_nonce($nonce) {
+    protected function verify_nonce($nonce)
+    {
         if (!wp_verify_nonce($nonce, 'pm_vault_nonce')) {
-            return wp_send_json_error('Invalid nonce.');
+            wp_send_json_error('Invalid nonce.');
         }
+    }
+
+    protected function sendJsonResponse($data, $message, $id)
+    {
+        $response = [
+            'data'    => $data,
+            'message' => $message  
+        ];
+        wp_send_json($response, $status);
+    }
+
+    protected function sendJsonSuccess($data, $status)
+    {
+        wp_send_json_success($data, $status);
+    }
+    
+    protected function sendJsonError($message, $status)
+    {
+        $response = [
+            'message' => $message
+        ];
+        wp_send_json_error($response, $status);
     }
 }

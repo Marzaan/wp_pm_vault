@@ -50,11 +50,11 @@
             </div>
           </div>
           <div class="col-md-4">
-            <p v-if="item.foldername" class="list-own-name" title="Folder">
+            <p v-if="item.foldername" class="list-org-name" title="Folder">
               {{ item.foldername }}
             </p>
             <p v-else>
-              --
+              ---
             </p>
           </div>
           <div class="col-md-1">
@@ -97,12 +97,16 @@
       @move-checked-items="moveCheckedItems"
       @toggle-move-item-modal="toggleMoveItemModal"
     />
+    <div v-if="openModal" class="modal-backdrop fade show"></div>
+    <div v-if="openMoveItemModal" class="modal-backdrop fade show"></div>
   </div>
 </template>
 
 <script>
-import itemModal from '../../modals/itemModal.vue';
-import moveItemModal from '../../modals/moveItemModal.vue';
+import Vue from 'vue';
+import Toasted from 'vue-toasted';
+import itemModal from '../modals/itemModal.vue';
+import moveItemModal from '../modals/moveItemModal.vue';
 
 export default {
   name: 'ItemList',
@@ -191,6 +195,16 @@ export default {
         navigator.clipboard.writeText(text);
     },
 
+    // Toaster
+    showToast(message, type) {
+      this.$toasted.show(message, {
+        theme: "toasted-primary",
+        position: "top-center",
+        duration: 3000,
+        type: type,
+      });
+    },
+
     // Edit, Update, Delete Item
     handleEditItem( item ) {
       this.selectedItemData = {
@@ -208,6 +222,7 @@ export default {
     },
     updateItemData(data) {
       if (data.updated) {
+        this.showToast('Item Updated Successfully', 'success');
         this.itemData = this.itemData.map(item => {
           if (item.id === data.id) {
             return {...item, ...data.values};
@@ -215,10 +230,12 @@ export default {
           return item;
         });
       } else {
+        this.showToast('Item Added Successfully', 'success');
         this.getItems();
       }
     },
     deleteItemData(id) {
+      this.showToast('Item Deleted Successfully', 'success');
       this.itemData = this.itemData.filter((item) => item.id !== id);
     },
 
@@ -233,10 +250,14 @@ export default {
           action: folderAction,
           route: 'get_folders',
           nonce: nonce
-        },
-        success: (response) => {
-          this.folderData = response.data;
         }
+      })
+      .then( response => {
+          this.folderData = response.data;
+      })
+      .fail( error => {
+        this.showToast(error.responseJSON.data.message, 'error');
+        console.log("failed", error.responseJSON.data.message);
       });
     },
     getItems() {
@@ -249,16 +270,14 @@ export default {
           action: itemAction,
           route: 'get_items',
           nonce: nonce
-        },
-        success: (response) => {
-          console.log(response);
-          if(response.success){
-            this.itemData = response.data;
-          }
-          else{
-            console.log("Server Error");
-          }
         }
+      })
+      .then( response => {
+          this.itemData = response.data;
+      })
+      .fail( error => {
+        this.showToast(error.responseJSON.data.message, 'error');
+        console.log("failed", error.responseJSON.data.message);
       });
     },
     addOrUpdateItem( params ) {
@@ -279,20 +298,18 @@ export default {
         favorite: params.favorite,
         nonce: nonce,
       };
-      console.log("dataToSubmit", dataToSubmit);
 
       window.jQuery.ajax({
         url: ajaxUrl,
         data: dataToSubmit,
-        method: 'POST',
-        success: (response) => {
-          console.log(response);
-          if (response.success) {
-            this.updateItemData(response.data);
-          } else {
-            console.log("Server Error", response);
-          }
-        }
+        method: 'POST'
+      })
+      .then( response => {
+          this.updateItemData(response.data);
+      })
+      .fail( error => {
+        this.showToast(error.responseJSON.data.message, 'error');
+        console.log("failed", error.responseJSON.data.message);
       });
     },
     deleteItem(id) {
@@ -306,20 +323,18 @@ export default {
         id: id,
         nonce: nonce,
       }
-      console.log("dataToSubmit", dataToSubmit);
 
       window.jQuery.ajax({
         url: ajaxUrl,
         data: dataToSubmit,
-        method: 'POST',
-        success: (response) => {
-          if (response.success) {
-            console.log("response", response);
-            this.deleteItemData(response.data.id);
-          } else {
-            console.log("Server Error", response);
-          }
-        }
+        method: 'POST'
+      })
+      .then( response => {
+        this.deleteItemData(response.data.id);
+      })
+      .fail( error => {
+        this.showToast(error.responseJSON.data.message, 'error');
+        console.log("failed", error.responseJSON.data.message);
       });
     },
 
@@ -340,20 +355,20 @@ export default {
         folder_id: folderID,
         nonce: nonce,
       };
-      console.log("dataToSubmit", dataToSubmit);
 
       window.jQuery.ajax({
         url: ajaxUrl,
         data: dataToSubmit,
         method: 'POST',
-        success: (response) => {
-          if (response.success) {
-            this.getItems();
-            this.checkedItems = [];
-          } else {
-            console.log("Server Error", response);
-          }
-        }
+      })
+      .then( () => {
+          this.showToast('Items Moved Successfully', 'success');
+          this.getItems();
+          this.checkedItems = [];        
+      })
+      .fail( error => {
+          this.showToast(error.responseJSON.data.message, 'error');
+          console.log("failed", error.responseJSON.data.message);
       });
     },
     deleteCheckedItems(){
@@ -377,16 +392,20 @@ export default {
         url: ajaxUrl,
         data: dataToSubmit,
         method: 'POST',
-        success: (response) => {
-          if (response.success) {
-            this.getItems();
-            this.checkedItems = [];
-          } else {
-            console.log("Server Error", response);
-          }
-        }
+      })
+      .then(() => {
+          this.showToast('Items Deleted Successfully', 'success');
+          this.getItems();
+          this.checkedItems = [];
+      })
+      .fail( error => {
+          this.showToast(error.responseJSON.data.message, 'error');
+          console.log("failed", error.responseJSON.data.message);
       });
     }
+  },
+  created() {
+    Vue.use(Toasted);
   },
   mounted() {
     this.getItems();

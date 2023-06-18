@@ -40,6 +40,8 @@
 </template>
 
 <script>
+import Vue from 'vue';
+import Toasted from 'vue-toasted';
 export default {
   name: "folderModal",
   props: {
@@ -79,10 +81,25 @@ export default {
     }
   },
   methods: {
+    // Toaster
+    showToast(message, type) {
+      this.$toasted.show(message, {
+        theme: "toasted-primary",
+        position: "top-center",
+        duration: 3000,
+        type: type,
+      });
+    },
+
     closeModal() {
       this.$emit('toggle-modal');
     },
     handleFolder(id = null, foldername = this.foldername) {
+      const folderNameLength = foldername.length;
+      if(folderNameLength === 0 || folderNameLength > 50){
+        this.showToast("Invalid Name Length", 'error');
+        return;
+      }
       const params = {
         'id': id,
         'foldername': foldername
@@ -95,6 +112,9 @@ export default {
       this.closeModal();
       this.$emit('delete-folder', this.selectedFolderData.id);
     }
-  }
+  },
+  created() {
+    Vue.use(Toasted);
+  },
 };
 </script>

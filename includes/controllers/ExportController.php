@@ -45,6 +45,11 @@ class ExportController extends BaseController {
         // Get the items
         $items = $this->wpdb->get_results($prepared_query, ARRAY_A);
 
+        if(!$items){
+            $this->sendJsonError("Internal Server Error", 500);
+            return;
+        }
+
         // CSV File Column Headers
         $columnHeaders = [
             'No', 'Folder Name', 'Name', 'Username', 'Password', 'URLs', 'Notes', 'Favorite', 'Updated At'
@@ -79,10 +84,7 @@ class ExportController extends BaseController {
             $csvContent .= implode(',', $row) . "\n";
         }
 
-        $response = [
-            'success' => true,
-            'data' => $csvContent
-        ];
-        return wp_send_json($response);
+        // Send Response
+        $this->sendJsonSuccess($csvContent, 200);
     }
 }

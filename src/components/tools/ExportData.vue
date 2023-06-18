@@ -16,6 +16,8 @@
 </template>
 
 <script>
+import Vue from 'vue';
+import Toasted from 'vue-toasted';
 export default {
   name: "ExportData",
   data() {
@@ -24,6 +26,16 @@ export default {
     };
   },
   methods: {
+    // Toaster
+    showToast(message, type) {
+      this.$toasted.show(message, {
+        theme: "toasted-primary",
+        position: "top-center",
+        duration: 3000,
+        type: type,
+      });
+    },
+
     handleSubmit() {
       const url = window.URL.createObjectURL(new Blob([this.exportData]));
       const currentTime = new Date();
@@ -47,13 +59,19 @@ export default {
           route: 'export_items',
           nonce: nonce,
         },
-        method: 'GET',
-        success: (response) => {
-          this.exportData = response.data;
-          console.log(response.data);
-        }
+        method: 'GET'
+      })
+      .then( response => {
+        this.exportData = response.data;
+      })
+      .fail( error => {
+        this.showToast(error.responseJSON.data.message, 'error');
+        console.log("failed", error.responseJSON.data.message);
       });
     }
+  },
+  created() {
+    Vue.use(Toasted);
   },
   mounted() {
     this.getDataForExport();
