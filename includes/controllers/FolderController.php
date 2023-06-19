@@ -31,97 +31,102 @@ class FolderController extends BaseController {
 
 
     private function show() {
-        // Get the current user's ID
-        $user_id = wp_get_current_user()->ID;
-
-        // Prepare the query
-        $prepared_query = $this->wpdb->prepare(
-            "SELECT folders.*, users.ID 
-            FROM {$this->folderTable} AS folders
-            INNER JOIN {$this->userTable} AS users ON users.ID = folders.user_id
-            WHERE folders.user_id = %d",
-            $user_id
-        );
-
-        // Get the folders
-        $folders = $this->wpdb->get_results($prepared_query);
-
-        // Send Response
-        if($folders){
+        try{
+            // Get the current user's ID
+            $user_id = wp_get_current_user()->ID;
+            
+            // Prepare the query
+            $prepared_query = $this->wpdb->prepare(
+                "SELECT folders.*, users.ID 
+                FROM {$this->folderTable} AS folders
+                INNER JOIN {$this->userTable} AS users ON users.ID = folders.user_id
+                WHERE folders.user_id = %d",
+                $user_id
+            );
+        
+            // Get the folders
+            $folders = $this->wpdb->get_results($prepared_query);
+            
+            // Send Response
             $this->sendJsonSuccess($folders, 200);
-        }
-        else{
-            $this->sendJsonError("Internal Server Error", 500);
+        
+        } catch (\Throwable $th) {
+            $this->sendJsonError($th->getMessage(), 500);
         }
     }
 
     private function create_or_update() {
-        // Get the current user's ID
-        $user_id = wp_get_current_user()->ID;
+        try{
+            // Get the current user's ID
+            $user_id = wp_get_current_user()->ID;
 
-        // Sanitize the data
-        $id = Sanitization::sanitize_value($_POST['id']);
-        $name = Sanitization::sanitize_value($_POST['name']);
+            // Sanitize the data
+            $id = Sanitization::sanitize_value($_POST['id']);
+            $name = Sanitization::sanitize_value($_POST['name']);
 
-        if(!$name){
-            $this->sendJsonError("Folder Name is Required", 400);
-            return;
+            if(!$name){
+                $this->sendJsonError("Folder Name is Required", 400);
+                return;
+            }
+
+            // Add New or Update Existing Folder
+            $result = $this->wpdb->replace(
+                $this->folderTable, 
+                [
+                    'id' => $id,
+                    'user_id' => $user_id,
+                    'foldername' => $name,
+                    'updated_at' => date('Y-m-d H:i:s')
+                ]
+            );
+            
+            // Check if the folder was created or updated
+            $response = [
+                'success' => $result,
+                'data' => [
+                    'id' => $result ? (($id) ? $id : $this->wpdb->insert_id) : '',
+                    'name' => $name,
+                    'updated' => $id ? true : false
+                ],
+                'message' => $result ? (($id) ? 'Folder Updated Successfully' : 'Folder Created Successfully') : 'Folder Update Failed'
+            ];
+            wp_send_json($response);
+
+        } catch (\Throwable $th) {
+            $this->sendJsonError($th->getMessage(), 500);
         }
-
-        // Add New or Update Existing Folder
-        $result = $this->wpdb->replace(
-            $this->folderTable, 
-            [
-                'id' => $id,
-                'user_id' => $user_id,
-                'foldername' => $name,
-                'updated_at' => date('Y-m-d H:i:s')
-            ]
-        );
-        
-        // Check if the folder was created or updated
-        $response = [
-            'success' => $result,
-            'data' => [
-                'id' => $result ? (($id) ? $id : $this->wpdb->insert_id) : '',
-                'name' => $name,
-                'updated' => $id ? true : false
-            ],
-            'message' => $result ? (($id) ? 'Folder Updated Successfully' : 'Folder Created Successfully') : 'Folder Update Failed'
-        ];
-        return wp_send_json($response);
     }
 
     private function destroy() {
-        // Get the current user's ID
-        $user_id = wp_get_current_user()->ID;
+        try{
+            // Get the current user's ID
+            $user_id = wp_get_current_user()->ID;
 
-        // Requested Folder ID
-        $folder_id = Sanitization::sanitize_value($_POST['id']);
+            // Requested Folder ID
+            $folder_id = Sanitization::sanitize_value($_POST['id']);
 
-        // Check if the folder exist and belong to the user
-        $folder = $this->wpdb->get_row(
-            $this->wpdb->prepare(
-                "SELECT id FROM {$this->folderTable} WHERE id = %d AND user_id = %d", $folder_id, $user_id
-            )
-        );
+            // Check if the folder exist and belong to the user
+            $folder = $this->wpdb->get_row(
+                $this->wpdb->prepare(
+                    "SELECT id FROM {$this->folderTable} WHERE id = %d AND user_id = %d", $folder_id, $user_id
+                )
+            );
 
-        if (!$folder) {
-            $this->sendJsonError("The folder doesn't exist or doesn't belong to the logged-in user.", 404);
-            return;
-        }
+            if (!$folder) {
+                $this->sendJsonError("The folder doesn't exist or doesn't belong to the logged-in user.", 404);
+                return;
+            }
 
-        // Delete the folder
-        $result = $this->wpdb->delete(
-            $this->folderTable,
-            ['id' => $folder_id]
-        );
+            // Delete the folder
+            $result = $this->wpdb->delete(
+                $this->folderTable,
+                ['id' => $folder_id]
+            );
 
-        if($result){
             $this->sendJsonResponse(['id' => $folder_id], 'Folder Deleted Successfully', 200);
-        }
-        else{
-            $this->sendJsonError("Internal Server Error", 500);
+        
+        } catch (\Throwable $th) {
+            $this->sendJsonError($th->getMessage(), 500);
         }
     }
 }

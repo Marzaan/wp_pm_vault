@@ -7,6 +7,7 @@ class BaseController {
     protected $userTable;
     protected $itemTable;
     protected $folderTable;
+    protected $encryptionKey;
 
     public function __construct()
     {
@@ -15,6 +16,7 @@ class BaseController {
         $this->userTable = $wpdb->prefix . 'users';
         $this->itemTable = $wpdb->prefix . 'pm_vault_items';
         $this->folderTable = $wpdb->prefix . 'pm_vault_folders';
+        $this->encryptionKey = '87898487323a4f02189c0da90214b';
         $this->wpdb = $wpdb;
     }
 
