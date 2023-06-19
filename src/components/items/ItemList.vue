@@ -257,7 +257,6 @@ export default {
       })
       .fail( error => {
         this.showToast(error.responseJSON.data.message, 'error');
-        console.log("failed", error.responseJSON.data.message);
       });
     },
     getItems() {
@@ -277,7 +276,6 @@ export default {
       })
       .fail( error => {
         this.showToast(error.responseJSON.data.message, 'error');
-        console.log("failed", error.responseJSON.data.message);
       });
     },
     addOrUpdateItem( params ) {
@@ -309,7 +307,6 @@ export default {
       })
       .fail( error => {
         this.showToast(error.responseJSON.data.message, 'error');
-        console.log("failed", error.responseJSON.data.message);
       });
     },
     deleteItem(id) {
@@ -334,7 +331,6 @@ export default {
       })
       .fail( error => {
         this.showToast(error.responseJSON.data.message, 'error');
-        console.log("failed", error.responseJSON.data.message);
       });
     },
 
@@ -368,7 +364,6 @@ export default {
       })
       .fail( error => {
           this.showToast(error.responseJSON.data.message, 'error');
-          console.log("failed", error.responseJSON.data.message);
       });
     },
     deleteCheckedItems(){
@@ -400,7 +395,6 @@ export default {
       })
       .fail( error => {
           this.showToast(error.responseJSON.data.message, 'error');
-          console.log("failed", error.responseJSON.data.message);
       });
     }
   },

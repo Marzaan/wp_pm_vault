@@ -137,7 +137,6 @@ export default {
       })
       .fail( error => {
         this.showToast(error.responseJSON.data.message, 'error');
-        console.log("failed", error.responseJSON.data.message);
       });
     },
     addOrUpdateFolder(params) {
@@ -164,7 +163,6 @@ export default {
       })
       .fail( error => {
         this.showToast(error.responseJSON.data.message, 'error');
-        console.log("failed", error.responseJSON.data.message);
       });
     },
     deleteFolder(id) {
@@ -190,7 +188,6 @@ export default {
       })
       .fail( error => {
         this.showToast(error.responseJSON.data.message, 'error');
-        console.log("failed", error.responseJSON.data.message);
       });
     }
   },
