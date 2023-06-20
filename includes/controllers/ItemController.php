@@ -14,6 +14,7 @@ class ItemController extends BaseController{
     public function register_routes()
     {
         add_action( 'wp_ajax_item_endpoints', [$this, 'ajax_routing']);
+        add_action( 'wp_ajax_nopriv_item_endpoints', [$this, 'ajax_routing']);
     }
 
     public function ajax_routing(){
@@ -32,7 +33,7 @@ class ItemController extends BaseController{
         return;
     }
 
-    private function show() {
+    public function show( $frontend_request = false ) {
         try {
             // Get the current user's ID
             $user_id = wp_get_current_user()->ID;
@@ -55,11 +56,19 @@ class ItemController extends BaseController{
                 $decryptedPassword = openssl_decrypt($item->password, 'AES-256-CBC', $this->encryptionKey, 0, $this->encryptionKey);
                 $item->password = $decryptedPassword;
             }
-        
+
+            // Request From Frontend
+            if($frontend_request){
+                return $items;
+            }
+            
             // Send Response
             $this->sendJsonSuccess($items, 200);
 
         } catch (\Throwable $th) {
+            if($frontend_request){
+                return $th->getMessage();
+            }
             $this->sendJsonError($th->getMessage(), 500);
         }
     }
@@ -78,7 +87,6 @@ class ItemController extends BaseController{
             $urls = Sanitization::sanitize_value(json_encode($_POST['urls']));
             $notes = Sanitization::sanitize_value($_POST['notes']);
             $favorite = Sanitization::sanitize_with_fallback_zero($_POST['favorite']);
-            $urlss = Sanitization::sanitize_value($_POST['urls']);
             
             if(!$name || !$username || !$password){
                 $this->sendJsonError("Please fill all the required fields", 400);

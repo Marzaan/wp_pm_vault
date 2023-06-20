@@ -16,7 +16,7 @@ class BaseController {
         $this->userTable = $wpdb->prefix . 'users';
         $this->itemTable = $wpdb->prefix . 'pm_vault_items';
         $this->folderTable = $wpdb->prefix . 'pm_vault_folders';
-        $this->encryptionKey = '87898487323a4f02189c0da90214b';
+        $this->encryptionKey = 'pm_vault_sec_key';
         $this->wpdb = $wpdb;
     }
 

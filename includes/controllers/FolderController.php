@@ -11,8 +11,10 @@ class FolderController extends BaseController {
         parent::__construct();
     }
 
-    public function register_routes() {
+    public function register_routes()
+    {
         add_action( 'wp_ajax_folder_endpoints', [$this, 'ajax_routing']);
+        add_action( 'wp_ajax_nopriv_folder_endpoints', [$this, 'ajax_routing']);
     }
 
     public function ajax_routing(){
@@ -30,7 +32,7 @@ class FolderController extends BaseController {
     }
 
 
-    private function show() {
+    public function show( $frontend_request = false ) {
         try{
             // Get the current user's ID
             $user_id = wp_get_current_user()->ID;
@@ -47,10 +49,18 @@ class FolderController extends BaseController {
             // Get the folders
             $folders = $this->wpdb->get_results($prepared_query);
             
+            // Request From Frontend
+            if($frontend_request){
+                return $folders;
+            }
+            
             // Send Response
             $this->sendJsonSuccess($folders, 200);
         
         } catch (\Throwable $th) {
+            if($frontend_request){
+                return $th->getMessage();
+            }
             $this->sendJsonError($th->getMessage(), 500);
         }
     }

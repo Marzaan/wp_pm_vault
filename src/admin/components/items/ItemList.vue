@@ -381,7 +381,6 @@ export default {
         ids: selectedItems,
         nonce: nonce,
       };
-      console.log("dataToSubmit", dataToSubmit);
 
       window.jQuery.ajax({
         url: ajaxUrl,

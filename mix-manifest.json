@@ -1,4 +1,6 @@
 {
+    "/dist/js/pm-vault-admin.js": "/dist/js/pm-vault-admin.js",
     "/dist/js/pm-vault-public.js": "/dist/js/pm-vault-public.js",
+    "/dist/css/pm-vault-admin.css": "/dist/css/pm-vault-admin.css",
     "/dist/css/pm-vault-public.css": "/dist/css/pm-vault-public.css"
 }

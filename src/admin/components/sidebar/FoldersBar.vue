@@ -133,7 +133,6 @@ export default {
       })
       .then( response => {
           this.folderData = response.data;
-          console.log(this.folderData);
       })
       .fail( error => {
         this.showToast(error.responseJSON.data.message, 'error');
@@ -158,7 +157,6 @@ export default {
         method: 'POST'
       })
       .then( response => {
-        console.log("response", response);
         this.updateFolderData(response.data);
       })
       .fail( error => {
@@ -183,7 +181,6 @@ export default {
         method: 'POST'
       })
       .then( response => {
-        console.log("response", response);
         this.deleteFolderData(response.data.id);
       })
       .fail( error => {

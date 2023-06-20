@@ -4,6 +4,7 @@ namespace PM_Vault;
 
 use PM_Vault\Enqueue;
 use PM_Vault\TextDomain;
+use PM_Vault\ShortCode;
 use PM_Vault\Controller\FolderController;
 use PM_Vault\Controller\ItemController;
 use PM_Vault\Controller\ExportController;
@@ -23,6 +24,7 @@ class PmVault {
 		$this->load_dependencies();
 		$this->set_locale();
 		$this->register_controllers();
+		$this->register_shortcodes();
 
 		add_action('admin_menu', [$this, 'add_menu']);
 	}
@@ -36,6 +38,7 @@ class PmVault {
 		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/controllers/ExportController.php');
 		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/controllers/ImportController.php');
 		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/config/Enqueue.php');
+		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/config/ShortCode.php');
 		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/database/migrations/FolderMigration.php');
 		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/database/migrations/ItemMigration.php');
 		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/helpers/Sanitization.php');
@@ -48,9 +51,11 @@ class PmVault {
 
     public function add_view() {
 		$enqueue = new Enqueue();
-		$enqueue->enqueue_styles();
-		$enqueue->enqueue_scripts();
-		$enqueue->localize_scripts();
+		$enqueue->admin_enqueue_styles();
+		$enqueue->admin_enqueue_scripts();
+		$enqueue->admin_localize_scripts();
+		$enqueue->enqueue_boostrap();
+		$enqueue->enqueue_fontawesome();
         echo "<div id='pm-vault-app'></div>";
 	}
 
@@ -71,5 +76,9 @@ class PmVault {
 		(new FolderController())->register_routes();
 		(new ExportController())->register_routes();
 		(new ImportController())->register_routes();
+	}
+
+	public function register_shortcodes(){
+		new ShortCode();
 	}
 }

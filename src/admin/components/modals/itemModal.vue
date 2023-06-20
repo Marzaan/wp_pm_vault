@@ -68,7 +68,7 @@
                         </div>
                     </div>
                     <div class="col-12 mb-4">
-                        <i class="hover-text" @click="addNewField"> New URL</i>
+                        <a class="link-info cursor-pointer" @click="addNewField"> New URL</a>
                     </div>
                 </div>
               <div class="col-12 mb-4">
