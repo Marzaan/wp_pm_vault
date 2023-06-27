@@ -15,11 +15,13 @@ class PmVault {
 	// The current version of the plugin.
 	protected $version;
 	protected $plugin_name;
+	protected $plugin_dir_path;
 
 	// Construct the plugin object.
 	public function __construct() {
 		$this->plugin_name = PM_VAULT;
 		$this->version = PM_VAULT_VERSION;
+		$this->plugin_dir_path = PLUGIN_DIR_PATH;
 		
 		$this->load_dependencies();
 		$this->set_locale();
@@ -30,18 +32,18 @@ class PmVault {
 	}
 
 	private function load_dependencies() {
-		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/config/TextDomain.php');
-		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/database/DatabaseMigrations.php');
-		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/controllers/BaseController.php');
-		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/controllers/FolderController.php');
-		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/controllers/ItemController.php');
-		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/controllers/ExportController.php');
-		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/controllers/ImportController.php');
-		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/config/Enqueue.php');
-		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/config/ShortCode.php');
-		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/database/migrations/FolderMigration.php');
-		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/database/migrations/ItemMigration.php');
-		require_once(plugin_dir_path( dirname( __FILE__ ) ) . 'includes/helpers/Sanitization.php');
+		require_once($this->plugin_dir_path . 'includes/config/TextDomain.php');
+		require_once($this->plugin_dir_path . 'includes/database/DatabaseMigrations.php');
+		require_once($this->plugin_dir_path . 'includes/controllers/BaseController.php');
+		require_once($this->plugin_dir_path . 'includes/controllers/FolderController.php');
+		require_once($this->plugin_dir_path . 'includes/controllers/ItemController.php');
+		require_once($this->plugin_dir_path . 'includes/controllers/ExportController.php');
+		require_once($this->plugin_dir_path . 'includes/controllers/ImportController.php');
+		require_once($this->plugin_dir_path . 'includes/config/Enqueue.php');
+		require_once($this->plugin_dir_path . 'includes/config/ShortCode.php');
+		require_once($this->plugin_dir_path . 'includes/database/migrations/FolderMigration.php');
+		require_once($this->plugin_dir_path . 'includes/database/migrations/ItemMigration.php');
+		require_once($this->plugin_dir_path . 'includes/helpers/Sanitization.php');
 	}
 
 	private function set_locale() {

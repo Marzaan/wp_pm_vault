@@ -33,7 +33,7 @@ class ShortCode {
         $frontend_request = true;
         $foldersData = $folders->show($frontend_request);
 
-        include(plugin_dir_path( __FILE__ ) . '../../src/public/views/ItemForm.php');
+        include(PLUGIN_DIR_PATH . 'src/public/views/ItemForm.php');
         return ob_get_clean();
     }
 
@@ -47,7 +47,7 @@ class ShortCode {
         $frontend_request = true;
         $itemsData = $items->show($frontend_request);
     
-        include(plugin_dir_path( __FILE__ ) . '../../src/public/views/ItemList.php');
+        include(PLUGIN_DIR_PATH . 'src/public/views/ItemList.php');
         return ob_get_clean();
     }
 }

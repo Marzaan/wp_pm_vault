@@ -32,13 +32,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  * The plugin name and version
 */
 defined( 'PM_VAULT' ) or define( 'PM_VAULT', true );
-defined( 'PM_VAULT_VERSION' ) or define( 'PM_VAULT_VERSION', '1.0.0' );
+defined( 'PM_VAULT_VERSION' ) or define( 'PM_VAULT_VERSION', '1.0.0_' . microtime() );
+defined( 'PLUGIN_DIR_PATH' ) or define( 'PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
 /**
  * The code that runs during plugin activation.
 */
 function activate_pm_vault() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/config/Activator.php';
+	require_once PLUGIN_DIR_PATH . 'includes/config/Activator.php';
 	Activator::activate();
 }
 
@@ -46,7 +47,7 @@ function activate_pm_vault() {
  * The code that runs during plugin deactivation.
 */
 function deactivate_pm_vault() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/config/Deactivator.php';
+	require_once PLUGIN_DIR_PATH . 'includes/config/Deactivator.php';
 	Deactivator::deactivate();
 }
 
@@ -72,7 +73,7 @@ add_filter('admin_footer_text', 'footer_text_modify');
 /**
  * Begins execution of the plugin.
 */
-require plugin_dir_path( __FILE__ ) . 'includes/PmVault.php';
+require PLUGIN_DIR_PATH . 'includes/PmVault.php';
 
 function run_pm_vault() {
 	new PmVault();

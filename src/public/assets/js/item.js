@@ -36,7 +36,6 @@ jQuery(function($) {
             method: 'POST'
         })
         .then(function(response) {
-            console.log("response",response);
             // Reset the form
             form.hide();
 
@@ -49,8 +48,6 @@ jQuery(function($) {
             form.parent().before(successDiv);
         })
         .fail(function(error) {
-            console.log("error", error);
-
             // Create a new div for success message
             const errorDiv = $('<div>', {
                 id: 'error-message',
