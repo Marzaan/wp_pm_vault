@@ -12,11 +12,11 @@
                 <label class="form-label fw-bold">Name</label>
                 <input type="text" class="form-control" placeholder="Name" required v-model="localSelectedItemData.name" />
               </div>
-              <div class="col-6 mb-4">
+              <div class="col-6 mb-4 p-0">
                 <label class="form-label fw-bold">Folder</label>
                 <select class="form-select" v-model="folderID">
                   <option value="null">-- Select --</option>
-                  <option v-for="folder in localFolderData" :key="folder.id" :value="folder.id">{{ folder.foldername }}</option>
+                  <option v-for="folder in folderData" :key="folder.id" :value="folder.id">{{ folder.foldername }}</option>
                 </select>
               </div>
                 <div class="row">
@@ -129,7 +129,6 @@ export default {
           loginUrls: [''],
           folderID: null,
           isFavorite: false, 
-          localFolderData: [],
           localSelectedItemData: {},
           isPasswordVisible: false,
           updatingItem: false,
@@ -151,9 +150,6 @@ export default {
                 this.loginUrls = [''];
                 this.folderID = null;
             }
-        },
-        folderData() {
-          this.localFolderData = this.folderData;
         }
     },
     computed: {

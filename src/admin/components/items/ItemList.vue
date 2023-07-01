@@ -50,11 +50,8 @@
             </div>
           </div>
           <div class="col-md-4">
-            <p v-if="item.foldername" class="list-org-name" title="Folder">
-              {{ item.foldername }}
-            </p>
-            <p v-else>
-              ---
+            <p class="list-org-name" title="Folder">
+              {{ getFolderName(item.folder_id) }}
             </p>
           </div>
           <div class="col-md-1">
@@ -115,7 +112,8 @@ export default {
     moveItemModal
   },
   props: {
-    selectMenu: Object
+    selectMenu: Object,
+    folderData: Array
   },
   data() {
     return {
@@ -123,7 +121,6 @@ export default {
       isEditModal: false,
       openMoveItemModal: false,
       itemData: [],
-      folderData: [],
       checkedItems: [],
       isCheckedAll: false,
       selectedItemData: {},
@@ -151,7 +148,13 @@ export default {
         return 'Favorite Items';
       }
       return 'All Items';
-    }
+    },
+    getFolderName() {
+      return function (folderId) {
+        const folder = this.folderData.find((folder) => folder.id === folderId);
+        return folder ? folder.foldername : '---';
+      };
+    },
   },
   methods: {
     // Modal
@@ -240,25 +243,6 @@ export default {
     },
 
     /***** AJAX CALL *****/
-    getFolders() {
-      const ajaxUrl = window.ajax_object.ajax_url;
-      const nonce = window.ajax_object.nonce;
-      const folderAction = 'folder_endpoints'
-      window.jQuery.ajax({
-        url: ajaxUrl,
-        data: {
-          action: folderAction,
-          route: 'get_folders',
-          nonce: nonce
-        }
-      })
-      .then( response => {
-          this.folderData = response.data;
-      })
-      .fail( error => {
-        this.showToast(error.responseJSON.data.message, 'error');
-      });
-    },
     getItems() {
       const ajaxUrl = window.ajax_object.ajax_url;
       const nonce = window.ajax_object.nonce;
@@ -402,7 +386,6 @@ export default {
   },
   mounted() {
     this.getItems();
-    this.getFolders();
   }
 }
 </script>

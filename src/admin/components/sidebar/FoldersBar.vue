@@ -17,7 +17,7 @@
               <div :class="['side-menu-item', selectMenu.typeValue === data.id ? 'active-menu' : '']"
                   @click="handleSelectMenu( data.id )"
               >
-                <i class="fa fa-folder" aria-hidden="true"></i>  {{ data.foldername.length > 15 ? data.foldername.slice(0, 15) + ".." : data.foldername }}
+                <i class="fa fa-folder p-1" aria-hidden="true"></i>  {{ data.foldername.length > 15 ? data.foldername.slice(0, 15) + ".." : data.foldername }}
               </div>
               <span>
                 <i class="fa fa-ellipsis-v" @click="handleEditFolder(data.id, data.foldername)"></i>
@@ -51,16 +51,18 @@ export default {
     folderModal,
   },
   props: {
-    selectMenu: Object
+    selectMenu: Object,
+    folderData: Array
   },
   emits: [
-    'set-select-menu'
+    'set-select-menu',
+    'get-folders',
+    'update-folder-data'
   ],
   data() {
     return {
       openModal: false,
       isEditModal: false,
-      folderData: [],
       selectedFolderData: {},
     }
   },
@@ -101,43 +103,25 @@ export default {
     updateFolderData(data) {
       if (data.updated) {
         this.showToast('Folder Updated Successfully', 'success');
-        this.folderData = this.folderData.map(folder => {
+        const updatedData = this.folderData.map(folder => {
           if (folder.id === data.id) {
             return {...folder, foldername: data.name};
           }
           return folder;
         });
+        this.$emit('update-folder-data', updatedData);
       } else {
         this.showToast('Folder Added Successfully', 'success');
-        this.getFolders();
+        this.$emit('get-folders');
       }
     },
     deleteFolderData(id) {
       this.showToast('Folder Deleted Successfully', 'success');
-      this.folderData = this.folderData.filter(folder => folder.id !== id);
+      const updatedData = this.folderData.filter(folder => folder.id !== id);
+      this.$emit('update-folder-data', updatedData);
     },
 
     /********* AJAX Call *********/
-    getFolders() {
-      const ajaxUrl = window.ajax_object.ajax_url;
-      const nonce = window.ajax_object.nonce;
-      const folderAction = 'folder_endpoints';
-      window.jQuery.ajax({
-        url: ajaxUrl,
-        data: {
-          action: folderAction,
-          route: 'get_folders',
-          nonce: nonce
-        },
-        method: 'GET',
-      })
-      .then( response => {
-          this.folderData = response.data;
-      })
-      .fail( error => {
-        this.showToast(error.responseJSON.data.message, 'error');
-      });
-    },
     addOrUpdateFolder(params) {
       const ajaxUrl = window.ajax_object.ajax_url;
       const folderAction = 'folder_endpoints';
@@ -190,9 +174,6 @@ export default {
   },
   created() {
     Vue.use(Toasted);
-  },
-  mounted() {
-    this.getFolders();
   }
 };
 </script>

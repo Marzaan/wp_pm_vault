@@ -14,6 +14,9 @@
               />
               <FoldersBar
                 :select-menu = "selectMenu"
+                :folder-data = "folderData"
+                @get-folders = "getFolders"
+                @update-folder-data = "updateFolderData"
                 @set-select-menu = "setSelectMenu"
               />
             </li>
@@ -23,6 +26,7 @@
       <div class="col-xs-12 col-sm-6 col-md-9">
         <ItemList
           :select-menu = "selectMenu"
+          :folder-data = "folderData"
         />
       </div>
     </div>
@@ -43,10 +47,11 @@ export default {
   },
   data() {
     return {
+      folderData: [],
       selectMenu: {
         menuType : '',
         typeValue: ''
-      },
+      }
     };
   },
   watch: {
@@ -55,10 +60,39 @@ export default {
     }
   },
   methods: {
+    /*********** Events **********/
     setSelectMenu( type, value ){
       this.selectMenu.menuType = type;
       this.selectMenu.typeValue = value;
-    }
+    },
+    updateFolderData( updatedData ){
+      this.folderData = updatedData;
+    },
+
+    /********* AJAX Call *********/
+    getFolders() {
+      const ajaxUrl = window.ajax_object.ajax_url;
+      const nonce = window.ajax_object.nonce;
+      const folderAction = 'folder_endpoints';
+      window.jQuery.ajax({
+        url: ajaxUrl,
+        data: {
+          action: folderAction,
+          route: 'get_folders',
+          nonce: nonce
+        },
+        method: 'GET',
+      })
+      .then( response => {
+          this.folderData = response.data;
+      })
+      .fail( error => {
+        this.showToast(error.responseJSON.data.message, 'error');
+      });
+    },
+  },
+  mounted() {
+    this.getFolders();
   }
 };
 </script>
