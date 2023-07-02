@@ -73,7 +73,6 @@
                   type="checkbox"
                   id="checkCapAToZ"
                   :checked="includeUpperCase"
-                  @change="generatePassword"
                   v-model="includeUpperCase"
               />
               <label class="form-check-label" for="checkCapAToZ">A-Z</label>
@@ -84,7 +83,6 @@
                   type="checkbox"
                   id="checkSmlaToz"
                   :checked="includeLowerCase"
-                  @change="generatePassword"
                   v-model="includeLowerCase"
               />
               <label class="form-check-label" for="checkSmlaToz">a-z</label>
@@ -95,7 +93,6 @@
                   type="checkbox"
                   id="checkNum"
                   :checked="includeNumbers"
-                  @change="generatePassword"
                   v-model="includeNumbers"
               />
               <label class="form-check-label" for="checkNum">0-9</label>
@@ -106,7 +103,6 @@
                   type="checkbox"
                   id="checkSpecial"
                   :checked="includeSpecialChars"
-                  @change="generatePassword"
                   v-model="includeSpecialChars"
               />
               <label class="form-check-label" for="checkSpecial">!@#$%^&*</label>
@@ -117,7 +113,6 @@
                   type="checkbox"
                   id="checkAvoidAmb"
                   :checked="avoidAmbiguousChars"
-                  @change="generatePassword"
                   v-model="avoidAmbiguousChars"
               />
               <label class="form-check-label" for="checkAvoidAmb">Avoid ambiguous characters</label>
@@ -157,7 +152,9 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import Chance from 'chance';
+import Toasted from 'vue-toasted';
 
 export default {
   name: "Generator",
@@ -210,14 +207,26 @@ export default {
     }
   },
   methods: {
-    setPasswordType( e ) {
-      this.passwordType = e.target.value;
+    // Toaster
+    showToast(message, type) {
+      this.$toasted.show(message, {
+        theme: "toasted-primary",
+        position: "top-center",
+        duration: 3000,
+        type: type,
+      });
     },
+
+    setPasswordType(event) {
+      this.passwordType = event.target.value;
+    },
+
     generatePhrase () {
         const chance = new Chance();
         const generatedPhrase  = chance.sentence({ words: this.wordLength }).replace(/\s/g, this.wordSeparator);
         this.showPassword = generatedPhrase;
     },
+
     generatePassword() {
       const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
       const lowercaseChars = 'abcdefghijklmnopqrstuvwxyz';
@@ -279,7 +288,7 @@ export default {
       generatedPasswordLength = generatedPassword.length;
 
       // Update the character length if generated password length gets higher
-      this.charLength = this.charLength < generatedPasswordLength ? generatedPasswordLength : this.charLength;
+      this.charLength = (this.charLength < generatedPasswordLength) ? generatedPasswordLength : this.charLength;
 
       // If there is no checkbox checked, include lowercase chars by default
       if (selectedCharSetsLength === 0) {
@@ -301,6 +310,7 @@ export default {
       // Assign the generated password to the view field
       this.showPassword = generatedPassword;
     },
+
     regeneratePassword(){
       if(this.passwordType === 'password') {
         this.generatePassword();
@@ -308,12 +318,17 @@ export default {
         this.generatePhrase();
       }
     },
+
     copyToClipboard(){
+      this.showToast('Password copied', 'success');
       navigator.clipboard.writeText(this.showPassword);
     }
   },
   mounted() {
     this.generatePassword();
-  }
+  },
+  created() {
+    Vue.use(Toasted);
+  },
 };
 </script>

@@ -24,9 +24,11 @@
               <ul class="dropdown-menu">
                 <div>
                   <li class="dropdown-item" @click="toggleMoveItemModal">
+                    <i class="fa fa-exchange"></i>
                     Move Selected
                   </li>
                   <li class="dropdown-item" @click="deleteCheckedItems">
+                    <i class="fa fa-trash"></i>
                     Delete Selected
                   </li>
                 </div>
@@ -39,10 +41,10 @@
         </div>
         <div v-for="item in filteredItems" :key="item.id" class="listing-item">
           <div class="checkbox-container col-md-2">
-            <input type="checkbox" id="item-1" :checked="checkedItems.includes(item.id)"
+            <input type="checkbox" :id="`item-${item.id}`" :checked="checkedItems.includes(item.id)"
                    @click="toggleCheckedItem(item.id)"
             />
-            <label for="item-1"></label>
+            <label :for="`item-${item.id}`"></label>
           </div>
           <div class="col-md-5 d-flex">
             <div class="item-name">
@@ -62,14 +64,24 @@
               </button>
               <ul class="dropdown-menu">
                 <div>
-                  <li class="dropdown-item" @click="copyToClipboard(item.username)">
+                  <li class="dropdown-item" @click="copyToClipboard( 'Username', item.username)">
+                    <i class="fa fa-user"></i>
                     Copy username
                   </li>
-                  <li class="dropdown-item" @click="copyToClipboard(item.password)">
+                  <li class="dropdown-item" @click="copyToClipboard( 'Password', item.password)">
+                    <i class="fa fa-key"></i>
                     Copy password
                   </li>
+                  <a v-if="getFirstUrl(item.urls)" :href="getFirstUrl(item.urls)" class="dropdown-item" target="_blank">
+                    <i class="fa fa-external-link-square"></i>
+                    Open Link
+                  </a>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
                   <li class="dropdown-item" @click="deleteItem(item.id)">
-                    Delete Selected
+                    <i class="fa fa-trash"></i>
+                    Delete Item
                   </li>
                 </div>
               </ul>
@@ -155,6 +167,12 @@ export default {
         return folder ? folder.foldername : '---';
       };
     },
+    getFirstUrl() {
+      return function (urls) {
+        const url = JSON.parse(urls);
+        return url[0] ? url[0] : '';
+      };
+    },
   },
   methods: {
     // Modal
@@ -194,8 +212,9 @@ export default {
     },
 
     // Copy To Clipboard
-    copyToClipboard ( text ) {
-        navigator.clipboard.writeText(text);
+    copyToClipboard ( name, text ) {
+      this.showToast(`${name} copied`, 'success');
+      navigator.clipboard.writeText(text);
     },
 
     // Toaster
@@ -270,14 +289,7 @@ export default {
       const dataToSubmit = {
         action: itemAction,
         route: 'create_or_update_item',
-        id: params.id,
-        name: params.name,
-        folderID: params.folderID,
-        username: params.username,
-        password: params.password,
-        urls: params.urls,
-        notes: params.notes,
-        favorite: params.favorite,
+        ...params,
         nonce: nonce,
       };
 
@@ -288,6 +300,7 @@ export default {
       })
       .then( response => {
           this.updateItemData(response.data);
+          console.log(response.data);
       })
       .fail( error => {
         this.showToast(error.responseJSON.data.message, 'error');
@@ -344,7 +357,8 @@ export default {
       .then( () => {
           this.showToast('Items Moved Successfully', 'success');
           this.getItems();
-          this.checkedItems = [];        
+          this.checkedItems = [];  
+          this.isCheckedAll = false;      
       })
       .fail( error => {
           this.showToast(error.responseJSON.data.message, 'error');
@@ -375,6 +389,7 @@ export default {
           this.showToast('Items Deleted Successfully', 'success');
           this.getItems();
           this.checkedItems = [];
+          this.isCheckedAll = false;
       })
       .fail( error => {
           this.showToast(error.responseJSON.data.message, 'error');

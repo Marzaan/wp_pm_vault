@@ -10,8 +10,8 @@
           <div class="modal-body">
             <div class="row">
               <div class="col-12 mb-4">
-                <label class="form-label fw-bold">Select Folder</label>
-                <select class="form-select" v-model="folderID">
+                <label class="form-label fw-bold" for="move-folder-select">Select Folder</label>
+                <select id="move-folder-select" class="form-select" v-model="folderID">
                   <option :value="null">-- Select --</option>
                   <option v-for="folder in folderData" :key="folder.id" :value="folder.id">{{ folder.foldername }}</option>
                 </select>

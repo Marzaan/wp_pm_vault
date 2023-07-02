@@ -10,21 +10,15 @@
         <div class="modal-body">
           <div class="row">
             <div class="col-12 mb-4">
-              <label class="form-label fw-bold">Folder Name</label>
-              <input v-if="!updatingFolder" type="text" class="form-control" placeholder="Name"
-                     required
-                     v-model="foldername"
-              />
-              <input v-else type="text" class="form-control" placeholder="Name"
-                     required
-                     v-model="selectedFolderName"
-              />
+              <label class="form-label fw-bold" for="foldername-input">Folder Name</label>
+              <input v-if="!updatingFolder" type="text" id="foldername-input" class="form-control" placeholder="Name" required v-model="foldername"/>
+              <input v-else type="text" id="foldername-input" class="form-control" placeholder="Name" required v-model="selectedFolderName"/>
             </div>
           </div>
         </div>
         <div class="modal-footer bg-light justify-content-between">
           <div>
-            <button v-if="!updatingFolder" type="button" class="btn btn-dark" @click="handleFolder()">Save</button>
+            <button v-if="!updatingFolder" type="button" class="btn btn-success" @click="handleFolder()">Save</button>
             <button v-else type="button" class="btn btn-success"
                     @click="handleFolder( selectedFolderID, selectedFolderName  )">Update</button>
             <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>

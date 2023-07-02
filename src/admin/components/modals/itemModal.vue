@@ -9,42 +9,44 @@
           <div class="modal-body">
             <div class="row">
               <div class="col-6 mb-4">
-                <label class="form-label fw-bold">Name</label>
-                <input type="text" class="form-control" placeholder="Name" required v-model="localSelectedItemData.name" />
+                <label class="form-label fw-bold" for="name-input">Name</label>
+                <input type="text" id="name-input" class="form-control" placeholder="Name" required v-model="localSelectedItemData.name" />
               </div>
               <div class="col-6 mb-4 p-0">
-                <label class="form-label fw-bold">Folder</label>
-                <select class="form-select" v-model="folderID">
+                <label class="form-label fw-bold" for="folder-select">Folder</label>
+                <select id="folder-select" class="form-select" v-model="folderID">
                   <option value="null">-- Select --</option>
                   <option v-for="folder in folderData" :key="folder.id" :value="folder.id">{{ folder.foldername }}</option>
                 </select>
               </div>
                 <div class="row">
                     <div class="col-6 mb-4">
-                        <label class="form-label fw-bold">Username</label>
+                        <label class="form-label fw-bold" for="username-input">Username</label>
                         <div class="input-group mb-3">
                             <input
                               type="text"
+                              id="username-input"
                               class="form-control"
                               placeholder="Username"
                               v-model="localSelectedItemData.username"
                             />
                             <span class="input-group-text">
-                                <i class="fa fa-clone cursor-pointer" aria-hidden="true" @click="copyToClipboard(localSelectedItemData.username)"></i>
+                                <i class="fa fa-clone cursor-pointer" @click="copyToClipboard( 'Username', localSelectedItemData.username)"></i>
                             </span>
                         </div>
                     </div>
                     <div class="col-6 mb-4">
-                        <label class="form-label fw-bold">Password</label>
+                        <label class="form-label fw-bold" for="password-input">Password</label>
                         <div class="input-group mb-3">
                             <input
+                              id="password-input"
                               class="form-control"
                               :type="passwordVisibility"
                               placeholder="Password"
                               v-model="localSelectedItemData.password"
                             />
                             <span class="input-group-text">
-                              <i class="fa fa-clone cursor-pointer" @click="copyToClipboard(localSelectedItemData.password)"></i>
+                              <i class="fa fa-clone cursor-pointer" @click="copyToClipboard( 'Password', localSelectedItemData.password)"></i>
                             </span>
                             <span class="input-group-text">
                                 <div class="cursor-pointer" @click="togglePasswordVisibility">
@@ -54,16 +56,24 @@
                         </div>
                     </div>
                     <div v-for="(field, index) in loginUrls" :key="index" class="col-6 mb-4">
-                        <label class="form-label fw-bold">URL {{ index + 1 }}</label>
+                        <label class="form-label fw-bold" :for="`url${index}-input`">URL {{ index + 1 }}</label>
                         <div class="input-group">
                             <input
                                 type="text"
+                                :id="`url${index}-input`"
                                 class="form-control"
                                 placeholder="https://google.com"
                                 v-model=loginUrls[index]
                             />
                             <span class="input-group-text">
-                              <i class="fa fa-clone cursor-pointer" @click="copyToClipboard(loginUrls[index])"></i>
+                              <i class="fa fa-clone cursor-pointer" @click="copyToClipboard( 'Url', loginUrls[index])"></i>
+                            </span>
+                            <span v-if="loginUrls[index]" class="input-group-text">
+                              <a
+                                class="fa fa-external-link-square link-dark text-decoration-none cursor-pointer"
+                                :href="loginUrls[index]"
+                                target="_blank">
+                              </a>
                             </span>
                         </div>
                     </div>
@@ -72,8 +82,8 @@
                     </div>
                 </div>
               <div class="col-12 mb-4">
-                <label class="form-label fw-bold">Notes</label>
-                <textarea class="form-control" rows="3" v-model="localSelectedItemData.notes"></textarea>
+                <label class="form-label fw-bold" for="note-input">Notes</label>
+                <textarea id="note-input" class="form-control" rows="3" v-model="localSelectedItemData.notes"></textarea>
               </div>
               <div class="col-12 mb-4">
                 <div class="row">
@@ -93,7 +103,7 @@
           </div>
           <div class="modal-footer bg-light justify-content-between">
             <div>
-                <button v-if="!updatingItem" type="button" class="btn btn-dark" @click="handleItem()">Save</button>
+                <button v-if="!updatingItem" type="button" class="btn btn-success" @click="handleItem()">Save</button>
                 <button v-else type="button" class="btn btn-success"
                     @click="handleItem( localSelectedItemData.id )">Update</button>
                 <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
@@ -216,7 +226,8 @@ export default {
         togglePasswordVisibility() {
             this.isPasswordVisible = !this.isPasswordVisible;
         },
-        copyToClipboard ( text ) {
+        copyToClipboard ( name, text ) {
+            this.showToast(`${name} copied`, 'success');
             navigator.clipboard.writeText(text);
         },
         closeModal() {
