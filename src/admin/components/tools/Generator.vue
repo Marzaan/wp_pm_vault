@@ -72,7 +72,6 @@
                   class="form-check-input"
                   type="checkbox"
                   id="checkCapAToZ"
-                  :checked="includeUpperCase"
                   v-model="includeUpperCase"
               />
               <label class="form-check-label" for="checkCapAToZ">A-Z</label>
@@ -82,7 +81,6 @@
                   class="form-check-input"
                   type="checkbox"
                   id="checkSmlaToz"
-                  :checked="includeLowerCase"
                   v-model="includeLowerCase"
               />
               <label class="form-check-label" for="checkSmlaToz">a-z</label>
@@ -92,7 +90,6 @@
                   class="form-check-input"
                   type="checkbox"
                   id="checkNum"
-                  :checked="includeNumbers"
                   v-model="includeNumbers"
               />
               <label class="form-check-label" for="checkNum">0-9</label>
@@ -102,7 +99,6 @@
                   class="form-check-input"
                   type="checkbox"
                   id="checkSpecial"
-                  :checked="includeSpecialChars"
                   v-model="includeSpecialChars"
               />
               <label class="form-check-label" for="checkSpecial">!@#$%^&*</label>
@@ -112,7 +108,6 @@
                   class="form-check-input"
                   type="checkbox"
                   id="checkAvoidAmb"
-                  :checked="avoidAmbiguousChars"
                   v-model="avoidAmbiguousChars"
               />
               <label class="form-check-label" for="checkAvoidAmb">Avoid ambiguous characters</label>
