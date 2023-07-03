@@ -112,8 +112,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import Toasted from 'vue-toasted';
 import itemModal from '../modals/itemModal.vue';
 import moveItemModal from '../modals/moveItemModal.vue';
 
@@ -213,18 +211,8 @@ export default {
 
     // Copy To Clipboard
     copyToClipboard ( name, text ) {
-      this.showToast(`${name} copied`, 'success');
+      this.$showToast(`${name} copied`, 'success');
       navigator.clipboard.writeText(text);
-    },
-
-    // Toaster
-    showToast(message, type) {
-      this.$toasted.show(message, {
-        theme: "toasted-primary",
-        position: "top-center",
-        duration: 3000,
-        type: type,
-      });
     },
 
     // Edit, Update, Delete Item
@@ -244,7 +232,7 @@ export default {
     },
     updateItemData(data) {
       if (data.updated) {
-        this.showToast('Item Updated Successfully', 'success');
+        this.$showToast('Item Updated Successfully', 'success');
         this.itemData = this.itemData.map(item => {
           if (item.id === data.id) {
             return {...item, ...data.values};
@@ -252,74 +240,67 @@ export default {
           return item;
         });
       } else {
-        this.showToast('Item Added Successfully', 'success');
+        this.$showToast('Item Added Successfully', 'success');
         this.getItems();
       }
     },
     deleteItemData(id) {
-      this.showToast('Item Deleted Successfully', 'success');
+      this.$showToast('Item Deleted Successfully', 'success');
       this.itemData = this.itemData.filter((item) => item.id !== id);
     },
 
     /***** AJAX CALL *****/
     getItems() {
-      const ajaxUrl = window.ajax_object.ajax_url;
-      const nonce = window.ajax_object.nonce;
       const itemAction = 'item_endpoints';
       window.jQuery.ajax({
-        url: ajaxUrl,
+        url: this.$ajaxUrl,
         data: {
           action: itemAction,
           route: 'get_items',
-          nonce: nonce
+          nonce: this.$nonce
         }
       })
       .then( response => {
           this.itemData = response.data;
       })
       .fail( error => {
-        this.showToast(error.responseJSON.data.message, 'error');
+        this.$showToast(error.responseJSON.data.message, 'error');
       });
     },
     addOrUpdateItem( params ) {
-      const ajaxUrl = window.ajax_object.ajax_url;
-      const nonce = window.ajax_object.nonce;
       const itemAction = 'item_endpoints';
 
       const dataToSubmit = {
         action: itemAction,
         route: 'create_or_update_item',
         ...params,
-        nonce: nonce,
+        nonce: this.$nonce,
       };
 
       window.jQuery.ajax({
-        url: ajaxUrl,
+        url: this.$ajaxUrl,
         data: dataToSubmit,
         method: 'POST'
       })
       .then( response => {
           this.updateItemData(response.data);
-          console.log(response.data);
       })
       .fail( error => {
-        this.showToast(error.responseJSON.data.message, 'error');
+        this.$showToast(error.responseJSON.data.message, 'error');
       });
     },
     deleteItem(id) {
-      const ajaxUrl = window.ajax_object.ajax_url;
-      const nonce = window.ajax_object.nonce;
       const itemAction = 'item_endpoints';
 
       const dataToSubmit = {
         action: itemAction,
         route: 'delete_item',
         id: id,
-        nonce: nonce,
+        nonce: this.$nonce,
       }
 
       window.jQuery.ajax({
-        url: ajaxUrl,
+        url: this.$ajaxUrl,
         data: dataToSubmit,
         method: 'POST'
       })
@@ -327,14 +308,12 @@ export default {
         this.deleteItemData(response.data.id);
       })
       .fail( error => {
-        this.showToast(error.responseJSON.data.message, 'error');
+        this.$showToast(error.responseJSON.data.message, 'error');
       });
     },
 
     // API Call for Selected Items
     moveCheckedItems( folderID ){
-      const ajaxUrl = window.ajax_object.ajax_url;
-      const nonce = window.ajax_object.nonce;
       const itemAction = 'item_endpoints';
 
       // Converting to Json without Key
@@ -346,27 +325,25 @@ export default {
         route: 'move_items',
         ids: selectedItems,
         folder_id: folderID,
-        nonce: nonce,
+        nonce: this.$nonce,
       };
 
       window.jQuery.ajax({
-        url: ajaxUrl,
+        url: this.$ajaxUrl,
         data: dataToSubmit,
         method: 'POST',
       })
       .then( () => {
-          this.showToast('Items Moved Successfully', 'success');
+          this.$showToast('Items Moved Successfully', 'success');
           this.getItems();
           this.checkedItems = [];  
           this.isCheckedAll = false;      
       })
       .fail( error => {
-          this.showToast(error.responseJSON.data.message, 'error');
+          this.$showToast(error.responseJSON.data.message, 'error');
       });
     },
     deleteCheckedItems(){
-      const ajaxUrl = window.ajax_object.ajax_url;
-      const nonce = window.ajax_object.nonce;
       const itemAction = 'item_endpoints';
 
       // Converting to Json without Key
@@ -377,27 +354,24 @@ export default {
         action: itemAction,
         route: 'delete_items',
         ids: selectedItems,
-        nonce: nonce,
+        nonce: this.$nonce,
       };
 
       window.jQuery.ajax({
-        url: ajaxUrl,
+        url: this.$ajaxUrl,
         data: dataToSubmit,
         method: 'POST',
       })
       .then(() => {
-          this.showToast('Items Deleted Successfully', 'success');
+          this.$showToast('Items Deleted Successfully', 'success');
           this.getItems();
           this.checkedItems = [];
           this.isCheckedAll = false;
       })
       .fail( error => {
-          this.showToast(error.responseJSON.data.message, 'error');
+          this.$showToast(error.responseJSON.data.message, 'error');
       });
     }
-  },
-  created() {
-    Vue.use(Toasted);
   },
   mounted() {
     this.getItems();

@@ -147,9 +147,7 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import Chance from 'chance';
-import Toasted from 'vue-toasted';
 
 export default {
   name: "Generator",
@@ -202,16 +200,6 @@ export default {
     }
   },
   methods: {
-    // Toaster
-    showToast(message, type) {
-      this.$toasted.show(message, {
-        theme: "toasted-primary",
-        position: "top-center",
-        duration: 3000,
-        type: type,
-      });
-    },
-
     setPasswordType(event) {
       this.passwordType = event.target.value;
     },
@@ -315,15 +303,12 @@ export default {
     },
 
     copyToClipboard(){
-      this.showToast('Password copied', 'success');
+      this.$showToast('Password copied', 'success');
       navigator.clipboard.writeText(this.showPassword);
     }
   },
   mounted() {
     this.generatePassword();
-  },
-  created() {
-    Vue.use(Toasted);
-  },
+  }
 };
 </script>

@@ -5,10 +5,6 @@ jQuery(function($) {
 
         const form = $(this);
 
-        const ajaxUrl = window.ajax_object.ajax_url;
-        const nonce = window.ajax_object.nonce;
-        const itemAction = 'item_endpoints';
-
         // Get URLs
         const urls = [];
         form.find('.url-fields-container input[name="urls[]"]').each(function() {
@@ -17,7 +13,7 @@ jQuery(function($) {
         });
 
         const dataToSubmit = {
-            action: itemAction,
+            action: 'item_endpoints',
             route: 'create_or_update_item',
             id: form.find('[name="id"]').val(),
             name: form.find('[name="name"]').val(),
@@ -27,11 +23,11 @@ jQuery(function($) {
             urls: urls,
             notes: form.find('[name="notes"]').val(),
             favorite: form.find('[name="favorite"]').is(':checked') ? 1 : 0,
-            nonce: nonce,
+            nonce: this.$nonce,
         };
 
         $.ajax({
-            url: ajaxUrl,
+            url: this.$ajaxUrl,
             data: dataToSubmit,
             method: 'POST'
         })

@@ -118,8 +118,6 @@
   </template>
 
 <script>
-import Vue from 'vue';
-import Toasted from 'vue-toasted';
 export default {
     name: "itemModal",
     props: {
@@ -171,26 +169,17 @@ export default {
         }
     },
     methods: {
-        // Toaster
-        showToast(message, type) {
-          this.$toasted.show(message, {
-            theme: "toasted-primary",
-            position: "top-center",
-            duration: 3000,
-            type: type,
-          });
-        },
         inputFieldsValidation() {
             if (!this.localSelectedItemData.name) {
-                this.showToast('Name is required', 'error');
+                this.$showToast('Name is required', 'error');
                 return false;
             }
             if (!this.localSelectedItemData.username) {
-                this.showToast('Username is required', 'error');
+                this.$showToast('Username is required', 'error');
                 return false;
             }
             if (!this.localSelectedItemData.password) {
-                this.showToast('Password is required', 'error');
+                this.$showToast('Password is required', 'error');
                 return false;
             }
             return true;
@@ -227,15 +216,12 @@ export default {
             this.isPasswordVisible = !this.isPasswordVisible;
         },
         copyToClipboard ( name, text ) {
-            this.showToast(`${name} copied`, 'success');
+            this.$showToast(`${name} copied`, 'success');
             navigator.clipboard.writeText(text);
         },
         closeModal() {
             this.$emit('toggle-modal');
         },
-    },
-    created() {
-      Vue.use(Toasted);
-    },
+    }
 }
 </script>

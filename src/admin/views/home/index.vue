@@ -71,15 +71,13 @@ export default {
 
     /********* AJAX Call *********/
     getFolders() {
-      const ajaxUrl = window.ajax_object.ajax_url;
-      const nonce = window.ajax_object.nonce;
       const folderAction = 'folder_endpoints';
       window.jQuery.ajax({
-        url: ajaxUrl,
+        url: this.$ajaxUrl,
         data: {
           action: folderAction,
           route: 'get_folders',
-          nonce: nonce
+          nonce: this.$nonce
         },
         method: 'GET',
       })
@@ -87,7 +85,7 @@ export default {
           this.folderData = response.data;
       })
       .fail( error => {
-        this.showToast(error.responseJSON.data.message, 'error');
+        this.$showToast(error.responseJSON.data.message, 'error');
       });
     },
   },

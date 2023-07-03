@@ -41,8 +41,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import Toasted from 'vue-toasted';
 import folderModal from '../modals/folderModal.vue';
 
 export default {
@@ -76,16 +74,6 @@ export default {
       this.isEditModal = true;
     },
 
-    // Toaster
-    showToast(message, type) {
-      this.$toasted.show(message, {
-        theme: "toasted-primary",
-        position: "top-center",
-        duration: 3000,
-        type: type,
-      });
-    },
-
     // Select Folder Method for Filtering Item List
     handleSelectMenu( value ) {
       this.$emit('set-select-menu', 'folder', value);
@@ -102,7 +90,7 @@ export default {
     },
     updateFolderData(data) {
       if (data.updated) {
-        this.showToast('Folder Updated Successfully', 'success');
+        this.$showToast('Folder Updated Successfully', 'success');
         const updatedData = this.folderData.map(folder => {
           if (folder.id === data.id) {
             return {...folder, foldername: data.name};
@@ -111,32 +99,28 @@ export default {
         });
         this.$emit('update-folder-data', updatedData);
       } else {
-        this.showToast('Folder Added Successfully', 'success');
+        this.$showToast('Folder Added Successfully', 'success');
         this.$emit('get-folders');
       }
     },
     deleteFolderData(id) {
-      this.showToast('Folder Deleted Successfully', 'success');
+      this.$showToast('Folder Deleted Successfully', 'success');
       const updatedData = this.folderData.filter(folder => folder.id !== id);
       this.$emit('update-folder-data', updatedData);
     },
 
     /********* AJAX Call *********/
     addOrUpdateFolder(params) {
-      const ajaxUrl = window.ajax_object.ajax_url;
-      const folderAction = 'folder_endpoints';
-      const nonce = window.ajax_object.nonce;
-
       const dataToSubmit = {
-        action: folderAction,
+        action: 'folder_endpoints',
         route: 'create_or_update_folder',
         id: params.id,
         name: params.foldername,
-        nonce: nonce,
+        nonce: this.$nonce,
       }
 
       window.jQuery.ajax({
-        url: ajaxUrl,
+        url: this.$ajaxUrl,
         data: dataToSubmit,
         method: 'POST'
       })
@@ -144,23 +128,19 @@ export default {
         this.updateFolderData(response.data);
       })
       .fail( error => {
-        this.showToast(error.responseJSON.data.message, 'error');
+        this.$showToast(error.responseJSON.data.message, 'error');
       });
     },
     deleteFolder(id) {
-      const ajaxUrl = window.ajax_object.ajax_url;
-      const nonce = window.ajax_object.nonce;
-      const folderAction = 'folder_endpoints';
-
       const dataToSubmit = {
-        action: folderAction,
+        action: 'folder_endpoints',
         route: 'delete_folder',
         id: id,
-        nonce: nonce,
+        nonce: this.$nonce,
       }
 
       window.jQuery.ajax({
-        url: ajaxUrl,
+        url: this.$ajaxUrl,
         data: dataToSubmit,
         method: 'POST'
       })
@@ -168,12 +148,9 @@ export default {
         this.deleteFolderData(response.data.id);
       })
       .fail( error => {
-        this.showToast(error.responseJSON.data.message, 'error');
+        this.$showToast(error.responseJSON.data.message, 'error');
       });
     }
-  },
-  created() {
-    Vue.use(Toasted);
   }
 };
 </script>
