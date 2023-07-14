@@ -5,6 +5,9 @@ jQuery(function($) {
 
         const form = $(this);
 
+        const ajaxUrl = window.ajax_object.ajax_url;
+        const nonce = window.ajax_object.nonce;
+
         // Get URLs
         const urls = [];
         form.find('.url-fields-container input[name="urls[]"]').each(function() {
@@ -23,11 +26,11 @@ jQuery(function($) {
             urls: urls,
             notes: form.find('[name="notes"]').val(),
             favorite: form.find('[name="favorite"]').is(':checked') ? 1 : 0,
-            nonce: this.$nonce,
+            nonce: nonce,
         };
 
         $.ajax({
-            url: this.$ajaxUrl,
+            url: ajaxUrl,
             data: dataToSubmit,
             method: 'POST'
         })
@@ -39,7 +42,7 @@ jQuery(function($) {
             const successDiv = $('<div>', {
                 id: 'success-message',
                 class: 'text-center',
-                html: $('<h4>', { text: 'Item Added Successfully' })
+                html: $('<h4>', { text: response.message })
             });
             form.parent().before(successDiv);
         })
@@ -48,7 +51,7 @@ jQuery(function($) {
             const errorDiv = $('<div>', {
                 id: 'error-message',
                 class: 'text-center',
-                html: $('<h4>', { text: error.responseJSON.data.message })
+                html: $('<h4>', { text: error.responseJSON?.data?.message })
             });
             form.parent().before(errorDiv);
         });
