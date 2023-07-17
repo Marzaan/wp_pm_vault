@@ -14,6 +14,11 @@ jQuery(function($) {
             let urlValue = $(this).val();
             urls.push(urlValue);
         });
+        
+        // If no URLs, add a space to the array
+        if(!urls.length){
+            urls.push(' ');
+        }
 
         const dataToSubmit = {
             action: 'item_endpoints',
