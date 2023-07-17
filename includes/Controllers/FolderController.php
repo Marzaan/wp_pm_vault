@@ -1,8 +1,8 @@
 <?php
 
-namespace PM_Vault\Controller;
-use PM_Vault\Controller\BaseController;
-use PM_Vault\helper\Sanitization;
+namespace PM_Vault\Controllers;
+use PM_Vault\Controllers\BaseController;
+use PM_Vault\Helpers\Sanitization;
 
 class FolderController extends BaseController {
 

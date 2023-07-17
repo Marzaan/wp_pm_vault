@@ -19,9 +19,13 @@
  * Domain Path:       /languages
  */
 
+if (file_exists(__DIR__.'/vendor/autoload.php')) {
+    require __DIR__.'/vendor/autoload.php';
+}
+
 use PM_Vault\PmVault;
-use PM_Vault\Activator;
-use PM_Vault\Deactivator;
+use PM_Vault\Config\Activator;
+use PM_Vault\Config\Deactivator;
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -39,7 +43,6 @@ defined( 'PLUGIN_DIR_PATH' ) or define( 'PLUGIN_DIR_PATH', plugin_dir_path(__FIL
  * The code that runs during plugin activation.
 */
 function activate_pm_vault() {
-	require_once PLUGIN_DIR_PATH . 'includes/config/Activator.php';
 	Activator::activate();
 }
 
@@ -47,7 +50,6 @@ function activate_pm_vault() {
  * The code that runs during plugin deactivation.
 */
 function deactivate_pm_vault() {
-	require_once PLUGIN_DIR_PATH . 'includes/config/Deactivator.php';
 	Deactivator::deactivate();
 }
 
@@ -73,7 +75,6 @@ add_filter('admin_footer_text', 'footer_text_modify');
 /**
  * Begins execution of the plugin.
 */
-require PLUGIN_DIR_PATH . 'includes/PmVault.php';
 
 function run_pm_vault() {
 	new PmVault();

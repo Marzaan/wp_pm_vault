@@ -1,10 +1,10 @@
 <?php
 
-namespace PM_Vault;
+namespace PM_Vault\Config;
 
-use PM_Vault\Enqueue;
-use PM_Vault\Controller\FolderController;
-use PM_Vault\Controller\ItemController;
+use PM_Vault\Config\Enqueue;
+use PM_Vault\Controllers\FolderController;
+use PM_Vault\Controllers\ItemController;
 
 class ShortCode {
 

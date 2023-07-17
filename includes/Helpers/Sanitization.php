@@ -1,6 +1,6 @@
 <?php
 
-namespace PM_Vault\helper;
+namespace PM_Vault\Helpers;
 
 class Sanitization {
     // Sanitize Vaule With Checking Empty

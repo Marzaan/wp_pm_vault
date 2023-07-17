@@ -1,5 +1,6 @@
 # Ignore general files and directories
 /node_modules
+/vendor
 /dist
 
 # Ignore development and build artifacts

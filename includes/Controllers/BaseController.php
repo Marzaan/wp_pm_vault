@@ -1,6 +1,6 @@
 <?php
 
-namespace PM_Vault\Controller;
+namespace PM_Vault\Controllers;
 
 class BaseController {
     protected $wpdb;

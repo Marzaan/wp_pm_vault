@@ -1,6 +1,6 @@
 <?php
 
-namespace PM_Vault;
+namespace PM_Vault\Config;
 
 class Enqueue {
 

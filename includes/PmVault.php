@@ -2,13 +2,13 @@
 
 namespace PM_Vault;
 
-use PM_Vault\Enqueue;
-use PM_Vault\TextDomain;
-use PM_Vault\ShortCode;
-use PM_Vault\Controller\FolderController;
-use PM_Vault\Controller\ItemController;
-use PM_Vault\Controller\ExportController;
-use PM_Vault\Controller\ImportController;
+use PM_Vault\Config\Enqueue;
+use PM_Vault\Config\TextDomain;
+use PM_Vault\Config\ShortCode;
+use PM_Vault\Controllers\FolderController;
+use PM_Vault\Controllers\ItemController;
+use PM_Vault\Controllers\ExportController;
+use PM_Vault\Controllers\ImportController;
 
 class PmVault {
 
@@ -23,27 +23,11 @@ class PmVault {
 		$this->version = PM_VAULT_VERSION;
 		$this->plugin_dir_path = PLUGIN_DIR_PATH;
 		
-		$this->load_dependencies();
 		$this->set_locale();
 		$this->register_controllers();
 		$this->register_shortcodes();
 
 		add_action('admin_menu', [$this, 'add_menu']);
-	}
-
-	private function load_dependencies() {
-		require_once($this->plugin_dir_path . 'includes/config/TextDomain.php');
-		require_once($this->plugin_dir_path . 'includes/database/DatabaseMigrations.php');
-		require_once($this->plugin_dir_path . 'includes/controllers/BaseController.php');
-		require_once($this->plugin_dir_path . 'includes/controllers/FolderController.php');
-		require_once($this->plugin_dir_path . 'includes/controllers/ItemController.php');
-		require_once($this->plugin_dir_path . 'includes/controllers/ExportController.php');
-		require_once($this->plugin_dir_path . 'includes/controllers/ImportController.php');
-		require_once($this->plugin_dir_path . 'includes/config/Enqueue.php');
-		require_once($this->plugin_dir_path . 'includes/config/ShortCode.php');
-		require_once($this->plugin_dir_path . 'includes/database/migrations/FolderMigration.php');
-		require_once($this->plugin_dir_path . 'includes/database/migrations/ItemMigration.php');
-		require_once($this->plugin_dir_path . 'includes/helpers/Sanitization.php');
 	}
 
 	private function set_locale() {
