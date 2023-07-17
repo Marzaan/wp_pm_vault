@@ -19,6 +19,7 @@
                 @update-folder-data = "updateFolderData"
                 @set-select-menu = "setSelectMenu"
               />
+              <ShortCodeBar/>
             </li>
           </ul>
         </div>
@@ -36,6 +37,7 @@
 <script>
 import ItemsBar from "../../components/sidebar/ItemsBar.vue";
 import FoldersBar from "../../components/sidebar/FoldersBar.vue";
+import ShortCodeBar from "../../components/sidebar/ShortCodeBar.vue";
 import ItemList from "../../components/items/ItemList.vue";
 
 export default {
@@ -43,7 +45,8 @@ export default {
   components: {
     ItemsBar,
     FoldersBar,
-    ItemList,
+    ShortCodeBar,
+    ItemList
   },
   data() {
     return {
